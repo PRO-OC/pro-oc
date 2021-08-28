@@ -1,6 +1,6 @@
 # PRO OC
 
-[Rozšíření do Google Chrome](https://chrome.google.com/webstore/detail/pro-oc/ngckfggbhfikdghbcmfdkcjidoaelgbg)
+[Rozšíření do Google Chrome](https://chrome.google.com/webstore/detail/pro-oc/ngckfggbhfikdghbcmfdkcjidoaelgbg), [Rozšíření do Mozilla Firefox](https://addons.mozilla.org/addon/pro-oc/)
 
 ![Preview](preview/nahled.PNG)
 
