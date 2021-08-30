@@ -36,6 +36,10 @@ function getRegistrCUDVyhledaniPacientaUrlParams(zadanka) {
     return urlParams;
 }
 
+function getRegistrCUDZadankyMojeZadankyStornoUrl(CisloZadanky) {
+    return getEregRegistrUrl() + "/Registr/CUDZadanky/MojeZadanky/Storno/" + CisloZadanky;
+}
+
 function unsetProvedenOdber(Cislo, callback) {
 
     var urlParams = getRegistrCUDZadankyMojeZadankyEditaceUrlParams(false);

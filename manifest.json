@@ -8,6 +8,9 @@
     "scripts": [ "background/background.js" ],
     "persistent": true
   },
+  "browser_action": {
+    "default_popup": "popup/popup.html"
+  },
   "content_scripts": [{
     "matches": [
       "*://*.ksrzis.cz/*"
@@ -15,6 +18,7 @@
     "js": ["content/content.js"]
   }],
   "permissions": [
-    "*://*.ksrzis.cz/*"
+    "*://*.ksrzis.cz/*",
+    "activeTab"
   ]
 }

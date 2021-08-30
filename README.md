@@ -27,6 +27,10 @@ Rozšíření přidává užitečné funkce do modulu [Pacienti COVID-19](https:
 
 ## Žádanky testů COVID-19 + Pacienti COVID-19
 
+- Přidává možnost přesunout vytváření žádanky z **Žádanky testů Covid 19** do modulu **Pacienti COVID-19**
+
+![Preview](preview/preview_presunout_zadanku_do_Pacienti_covid_19.PNG)
+
 - Přidává možnost vidět a změnit přihlašovací údaje do aplikace [Tečka](https://ockodoc.mzcr.cz/napoveda/tecka/cz/) nebo [ocko.uzis.cz](https://ocko.uzis.cz/) včetně tlačítka **Detail pacienta**
 
 ![Preview](preview/moznost_ulozit_prihlasovaci_udaje_na_zadance.PNG)

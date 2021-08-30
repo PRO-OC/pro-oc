@@ -341,6 +341,7 @@ if(CisloElement && CisloElement.value) {
 
 var actionsDiv = document.querySelector(".actions");
 
+var CisloLabel = document.querySelector('label[for="Zadanka_Cislo"]');
 var JmenoLabel = document.querySelector('label[for="Zadanka_TestovanyJmeno"]');
 var PrijmeniLabel = document.querySelector('label[for="Zadanka_TestovanyPrijmeni"]');
 var CisloPojistenceLabel = document.querySelector('label[for="Zadanka_TestovanyCisloPojistence"]');
@@ -457,18 +458,17 @@ if(
     accordionZadankyActions.appendChild(link);
 }
 
-var TypyTestuNazvyLabel = document.querySelector('label[for="TypyTestuNazvy"]');
+var ZadankaCisloElement = document.querySelector('label[for="Zadanka_Cislo"]');
 var ZadankaProvedenOdber = document.getElementById('Zadanka_ProvedenOdber');
-var ZmenaZadankyLink = document.querySelector('[id*="link_registr_cudzadanky_mojezadanky_editace"]');
+var IsZadankaDetail = window.location.href.includes("/Detail/");
 
-if (
-    TypyTestuNazvyLabel && 
-    TypyTestuNazvyLabel.nextElementSibling.innerText &&
-    ZmenaZadankyLink &&
+if(
+    IsZadankaDetail &&
+    ZadankaCisloElement && ZadankaCisloElement.nextElementSibling.innerText && 
     ZadankaProvedenOdber && ZadankaProvedenOdber.checked
     ) {
-        
-        const IdZadanky = ZmenaZadankyLink.id.substring(ZmenaZadankyLink.id.lastIndexOf('_') + 1);
+
+        const IdZadanky = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
 
         var StornoButton = document.createElement("button");
         StornoButton.innerHTML = "Zrušení žádanky";
@@ -480,31 +480,36 @@ if (
 
         StornoButton.addEventListener('click', function() {
 
-            chrome.runtime.sendMessage({
-                "text": "ZrusitProvedenOdber",
-                "data": {
-                    "Cislo": IdZadanky
-                }
-            }, function (resultEdit) {
-
-                if(resultEdit) {
-
-                    var confirmZrušit = window.confirm("Opravdu chcete zrušit žádanku?");
-                    if (confirmZrušit == true) {
-
-                        chrome.runtime.sendMessage({
-                            "text": "StornoZadanka",
-                            "data": {
-                                "Cislo": IdZadanky
-                            }
-                        }, function (stornoZadanka) {
-                            if(stornoZadanka) {
-                                window.location.href = getRegistrCUDZadankyMojeZadankyUrl();
-                            }
-                        });
+            if(
+                (ZadankaProvedenOdber && ZadankaProvedenOdber.checked) ||
+                (ProvedenOdberElement && ProvedenOdberElement.checked)
+            ) {
+                chrome.runtime.sendMessage({
+                    "text": "ZrusitProvedenOdber",
+                    "data": {
+                        "Cislo": IdZadanky
                     }
-                }
-            });
+                }, function (resultEdit) {
+
+                    if(resultEdit) {
+
+                        var confirmZrušit = window.confirm("Opravdu chcete zrušit žádanku?");
+                        if (confirmZrušit == true) {
+
+                            chrome.runtime.sendMessage({
+                                "text": "StornoZadanka",
+                                "data": {
+                                    "Cislo": IdZadanky
+                                }
+                            }, function (stornoZadanka) {
+                                if(stornoZadanka) {
+                                    window.location.href = getRegistrCUDZadankyMojeZadankyUrl();
+                                }
+                            });
+                        }
+                    }
+                });
+            }
         }
     );
 }
