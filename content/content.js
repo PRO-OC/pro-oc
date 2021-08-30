@@ -24,7 +24,11 @@ function getRegistrCUDZadankyMojeZadankyUrl() {
     return getEregRegistrUrl() + "/Registr/CUDZadanky/MojeZadanky";
 }
 
-function getRegistrCUDOvereniGetCertifikat(Cislo) {
+function getRegistrCUDOvereniDetailCisloUrl(Cislo) {
+    return getRegistrZadankyDomainUrl() + "/Registr/CUD/Overeni/DetailCislo?Cislo=" + Cislo;
+}
+
+function getRegistrCUDOvereniGetCertifikatUrl(Cislo) {
     return getRegistrZadankyDomainUrl() + "/Registr/CUD/Overeni/GetCertifikat?Cislo=" + Cislo;
 }
 
@@ -331,7 +335,7 @@ if(CisloElement && CisloElement.value) {
     var linkElement = document.createElement("a");
 
     linkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
-    linkElement.setAttribute("href", getRegistrCUDOvereniGetCertifikat(CisloElement.value));
+    linkElement.setAttribute("href", getRegistrCUDOvereniGetCertifikatUrl(CisloElement.value));
     linkElement.text = "Stáhnout certifikát";
     linkElement.setAttribute("role", "button"); 
 
@@ -512,4 +516,22 @@ if(
             }
         }
     );
+}
+    
+if(
+    CisloLabel && CisloLabel.nextElementSibling.innerText &&
+    formActionsElement
+  ) {
+
+    var Cislo = CisloLabel.nextElementSibling.innerText;
+
+    var button = document.createElement("button");
+    button.innerText = "Detail žádanky na Žádanky testů COVID-19";
+    button.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only")
+
+    button.addEventListener('click', function() {
+        window.open(getRegistrCUDOvereniDetailCisloUrl(Cislo));
+    }, false);
+    
+    formActionsElement.appendChild(button);
 }

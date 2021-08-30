@@ -27,6 +27,10 @@ Rozšíření přidává užitečné funkce do modulu [Pacienti COVID-19](https:
 
 ## Žádanky testů COVID-19 + Pacienti COVID-19
 
+- Přidává tlačítko **Detail žádanky na Žádanky testů COVID-19** na detail žádanky v modulu **Pacienti Covid-19**
+
+![Preview](preview/tlacitko_detail_zadanky_na_Zadanky_testu_covid_19.PNG)
+
 - Přidává možnost přesunout vytváření žádanky z **Žádanky testů Covid 19** do modulu **Pacienti COVID-19**
 
 ![Preview](preview/preview_presunout_zadanku_do_Pacienti_covid_19.PNG)
