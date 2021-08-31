@@ -329,12 +329,19 @@ if(editFormElement && TestovanyTelefon) {
 
 
 const CisloElement = document.getElementById("Cislo");
+const getCertifikatElementId = "link_registr_cud_overeni_getcertifikat_cislo_" + CisloElement;
+const getCertifikatElement = document.getElementById(getCertifikatElementId);
 
-if(CisloElement && CisloElement.value) {
+if(
+    !getCertifikatElement && 
+    CisloElement && 
+    CisloElement.value
+    ) {
 
     var linkElement = document.createElement("a");
-
+ 
     linkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
+    linkElement.setAttribute("id", getCertifikatElementId);
     linkElement.setAttribute("href", getRegistrCUDOvereniGetCertifikatUrl(CisloElement.value));
     linkElement.text = "Stáhnout certifikát";
     linkElement.setAttribute("role", "button"); 
