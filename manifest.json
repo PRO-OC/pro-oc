@@ -19,6 +19,6 @@
   }],
   "permissions": [
     "*://*.ksrzis.cz/*",
-    "activeTab"
+    "tabs"
   ]
 }

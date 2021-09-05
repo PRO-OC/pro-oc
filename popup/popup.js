@@ -1,4 +1,4 @@
-const ZadankaToPacientiCovid19Button = document.getElementById("ZadankaToPacientiCovid19");
+var ZadankaToPacientiCovid19Button = document.getElementById("ZadankaToPacientiCovid19");
 
 function getRegistrDomain() {
     return "eregpublicsecure.ksrzis.cz";
@@ -39,23 +39,56 @@ function getEregRegistrCUDzadankyZadankaUrl() {
 if (ZadankaToPacientiCovid19Button) {
     ZadankaToPacientiCovid19Button.onclick = function() {
 
-        chrome.tabs.getSelected(null, function(tab) {
+        if(typeof browser === 'undefined') {
+            chrome.tabs.query({active: true}, function(tabs) {
 
-            var url = new URL(tab.url);
+                if(!tabs[0]) {
+                    return;
+                }
+    
+                var url = new URL(tabs[0].url);
+    
+                if(
+                    url.origin == getRegistrUrl() &&
+                    (
+                        url.pathname == getRegistrZadankaOdberneMistoPage() ||
+                        url.pathname == getEregRegistrCUDzadankyZadankaPage()
+                    )
+                    ) {
+                        var pacientiCovid19ZadankaUrl = getEregRegistrCUDzadankyZadankaUrl();
+    
+                        var newUrl = pacientiCovid19ZadankaUrl + url.search;
+    
+                        console.log(newUrl);
+    
+                        chrome.tabs.update({url: newUrl});
+                }
+            });
+        } else {
+            browser.tabs.query({active: true}).then(function (tabs) {
 
-            if(
-                url.origin == getRegistrUrl() &&
-                (
-                    url.pathname == getRegistrZadankaOdberneMistoPage() ||
-                    url.pathname == getEregRegistrCUDzadankyZadankaPage()
-                )
-                ) {
-                    var pacientiCovid19ZadankaUrl = getEregRegistrCUDzadankyZadankaUrl();
-
-                    var newUrl = pacientiCovid19ZadankaUrl + url.search;
-
-                    chrome.tabs.update({url: newUrl});
-            }
-        });
+                if(!tabs[0]) {
+                    return;
+                }
+    
+                var url = new URL(tabs[0].url);
+    
+                if(
+                    url.origin == getRegistrUrl() &&
+                    (
+                        url.pathname == getRegistrZadankaOdberneMistoPage() ||
+                        url.pathname == getEregRegistrCUDzadankyZadankaPage()
+                    )
+                    ) {
+                        var pacientiCovid19ZadankaUrl = getEregRegistrCUDzadankyZadankaUrl();
+    
+                        var newUrl = pacientiCovid19ZadankaUrl + url.search;
+    
+                        console.log(newUrl);
+    
+                        chrome.tabs.update({url: newUrl});
+                }
+            });
+        }
     }
-  }
+}
