@@ -98,10 +98,10 @@ function hideOckoUzisPatientCredentials() {
     }
 }
 
-function setOckoUzisPatientDetailEditLink(EditLink) {
+function setOckoUzisPatientDetailEditLink(editLink) {
     var OckoUzisEditLinkElement = document.getElementById("OckoUzisEditLink");
     if(OckoUzisEditLinkElement) {
-        OckoUzisEditLink.value = EditLink;
+        OckoUzisEditLink.value = editLink;
     }
 }
 
@@ -259,7 +259,7 @@ function loadAndSetOckoUzisPatientInformation() {
     }
 }
 
-function setOckoUzisPatientDetailLink(Link) {
+function setOckoUzisPatientDetailLink(link) {
 
     var linkElement = document.getElementById("OckoUzisLink");
 
@@ -267,7 +267,7 @@ function setOckoUzisPatientDetailLink(Link) {
         linkElement = document.createElement("a");
 
         linkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
-        linkElement.setAttribute("href", Link);
+        linkElement.setAttribute("href", link);
         linkElement.setAttribute("id", "OckoUzisLink");
         linkElement.text = "Detail pacienta";
         linkElement.setAttribute("role", "button");
@@ -285,7 +285,7 @@ function setOckoUzisPatientDetailLink(Link) {
             PacientiCovid19Profil.appendChild(OckoUzisColumnDivElement);
     }
 
-    linkElement.setAttribute("href", Link);
+    linkElement.setAttribute("href", link);
 }
 
 loadAndSetOckoUzisPatientInformation();
@@ -330,7 +330,7 @@ if(editFormElement && TestovanyTelefon) {
 
 const CisloElement = document.getElementById("Cislo");
 const getCertifikatElementId = "link_registr_cud_overeni_getcertifikat_cislo_" + CisloElement;
-const getCertifikatElement = document.getElementById(getCertifikatElementId);
+var getCertifikatLinkElement = document.getElementById(getCertifikatElementId);
 
 if(
     !getCertifikatElement && 
@@ -338,15 +338,15 @@ if(
     CisloElement.value
     ) {
 
-    var linkElement = document.createElement("a");
+    var getCertifikatLinkElement = document.createElement("a");
  
-    linkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
-    linkElement.setAttribute("id", getCertifikatElementId);
-    linkElement.setAttribute("href", getRegistrCUDOvereniGetCertifikatUrl(CisloElement.value));
-    linkElement.text = "Stáhnout certifikát";
-    linkElement.setAttribute("role", "button"); 
+    getCertifikatLinkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
+    getCertifikatLinkElement.setAttribute("id", getCertifikatElementId);
+    getCertifikatLinkElement.setAttribute("href", getRegistrCUDOvereniGetCertifikatUrl(CisloElement.value));
+    getCertifikatLinkElement.text = "Stáhnout certifikát";
+    getCertifikatLinkElement.setAttribute("role", "button"); 
 
-    document.querySelector("div.actions").appendChild(linkElement);
+    document.querySelector("div.actions").appendChild(getCertifikatLinkElement);
 }
 
 
@@ -360,6 +360,12 @@ var DatumNarozeniLabel = document.querySelector('label[for="Zadanka_TestovanyDat
 var Narodnost = document.getElementById("TestovanyNarodnost");
 
 function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence) {
+    const detailPacientaId = "detail-pacienta";
+    var detailPacienta = document.getElementById(detailPacientaId);
+    if(detailPacienta) {
+        return;
+    }
+
     var form = document.createElement("form");
     form.action = getRegistrCUDVyhledaniPacientaUrl();
     form.method = "POST";
@@ -413,6 +419,7 @@ function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrisl
     var submit = document.createElement("button");
     submit.name = "_submit";
     submit.type = "submit";
+    submit.setAttribute("id", detailPacientaId)
     submit.setAttribute("class", "button-action ui-button ui-corner-all ui-widget")
     submit.value = "None";
     submit.innerHTML  = "Detail pacienta";
@@ -447,7 +454,11 @@ var CisloPojistenceDetailProfilu = document.querySelector('label[for="Pacient_Ci
 
 var accordionZadankyActions = document.querySelector('#accordionZadanky > div > .actions');
 
+const vyhledatMojeZadankyLinkElementId = "vyhledat-moje-zadanky";
+var vyhledatMojeZadankyLinkElement = document.getElementById(vyhledatMojeZadankyLinkElementId);
+
 if(
+    !vyhledatMojeZadankyLinkElement &&
     JmenoLabelDetailProfilu && JmenoLabelDetailProfilu.nextElementSibling.innerText &&
     PrijmeniLabelDetailProfilu && PrijmeniLabelDetailProfilu.nextElementSibling.innerText &&
     CisloPojistenceDetailProfilu && CisloPojistenceDetailProfilu.nextElementSibling.innerText &&
@@ -460,13 +471,14 @@ if(
     var urlParams = getRegistrCUDZadankyMojeZadankyUrlParams(Jmeno, Prijmeni, CisloPojistence);  
     var url = getRegistrCUDZadankyMojeZadankyUrl() + "?" + urlParams.toString();
     
-    var link = document.createElement("a");
-    link.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
-    link.setAttribute("href", url);
-    link.text = "Vyhledat moje žádanky";
-    link.setAttribute("role", "button");
+    vyhledatMojeZadankyLinkElement = document.createElement("a");
+    vyhledatMojeZadankyLinkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
+    vyhledatMojeZadankyLinkElement.setAttribute("id", vyhledatMojeZadankyLinkElementId);
+    vyhledatMojeZadankyLinkElement.setAttribute("href", url);
+    vyhledatMojeZadankyLinkElement.text = "Vyhledat moje žádanky";
+    vyhledatMojeZadankyLinkElement.setAttribute("role", "button");
 
-    accordionZadankyActions.appendChild(link);
+    accordionZadankyActions.appendChild(vyhledatMojeZadankyLinkElement);
 }
 
 var ZadankaCisloElement = document.querySelector('label[for="Zadanka_Cislo"]');
@@ -481,64 +493,74 @@ if(
 
         const IdZadanky = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
 
-        var StornoButton = document.createElement("button");
-        StornoButton.innerHTML = "Zrušení žádanky";
-        StornoButton.setAttribute("id", "link_registr_cudzadanky_mojezadanky_storno_" + IdZadanky);
-        StornoButton.setAttribute("class", "dialog-action button-other ui-button ui-corner-all ui-widget");
+        const StornoButtonElementId = "link_registr_cudzadanky_mojezadanky_storno_" + IdZadanky;
+        var StornoButtonElement = document.getElementById(StornoButtonElementId);
 
-        var actions = document.querySelector('.actions');
-        actions.appendChild(StornoButton);
+        if(!StornoButtonElement) {
+            StornoButtonElement = document.createElement("button");
+            StornoButtonElement.innerHTML = "Zrušení žádanky";
+            StornoButtonElement.setAttribute("id", StornoButtonElementId);
+            StornoButtonElement.setAttribute("class", "dialog-action button-other ui-button ui-corner-all ui-widget");
 
-        StornoButton.addEventListener('click', function() {
+            var actions = document.querySelector('.actions');
+            actions.appendChild(StornoButtonElement);
 
-            if(
-                (ZadankaProvedenOdber && ZadankaProvedenOdber.checked) ||
-                (ProvedenOdberElement && ProvedenOdberElement.checked)
-            ) {
-                chrome.runtime.sendMessage({
-                    "text": "ZrusitProvedenOdber",
-                    "data": {
-                        "Cislo": IdZadanky
-                    }
-                }, function (resultEdit) {
+            StornoButtonElement.addEventListener('click', function() {
 
-                    if(resultEdit) {
-
-                        var confirmZrušit = window.confirm("Opravdu chcete zrušit žádanku?");
-                        if (confirmZrušit == true) {
-
-                            chrome.runtime.sendMessage({
-                                "text": "StornoZadanka",
-                                "data": {
-                                    "Cislo": IdZadanky
-                                }
-                            }, function (stornoZadanka) {
-                                if(stornoZadanka) {
-                                    window.location.href = getRegistrCUDZadankyMojeZadankyUrl();
-                                }
-                            });
+                if(
+                    (ZadankaProvedenOdber && ZadankaProvedenOdber.checked) ||
+                    (ProvedenOdberElement && ProvedenOdberElement.checked)
+                ) {
+                    chrome.runtime.sendMessage({
+                        "text": "ZrusitProvedenOdber",
+                        "data": {
+                            "Cislo": IdZadanky
                         }
-                    }
-                });
+                    }, function (resultEdit) {
+
+                        if(resultEdit) {
+
+                            var confirmZrušit = window.confirm("Opravdu chcete zrušit žádanku?");
+                            if (confirmZrušit == true) {
+
+                                chrome.runtime.sendMessage({
+                                    "text": "StornoZadanka",
+                                    "data": {
+                                        "Cislo": IdZadanky
+                                    }
+                                }, function (stornoZadanka) {
+                                    if(stornoZadanka) {
+                                        window.location.href = getRegistrCUDZadankyMojeZadankyUrl();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
             }
-        }
-    );
+        );
+    }
 }
-    
+
+const detailZadankyZadankyTestuCovid19ButtonId = "detail-zadanky-zadanky-testu-covid-19";
+var detailZadankyZadankyTestuCovid19Button = document.getElementById(detailZadankyZadankyTestuCovid19ButtonId);
+
 if(
+    !detailZadankyZadankyTestuCovid19Button &&
     CisloLabel && CisloLabel.nextElementSibling.innerText &&
     formActionsElement
   ) {
 
     var Cislo = CisloLabel.nextElementSibling.innerText;
 
-    var button = document.createElement("button");
-    button.innerText = "Detail žádanky na Žádanky testů COVID-19";
-    button.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only")
+    detailZadankyZadankyTestuCovid19Button = document.createElement("button");
+    detailZadankyZadankyTestuCovid19Button.setAttribute("id", "detail-zadanky-zadanky-testu-covid-19");
+    detailZadankyZadankyTestuCovid19Button.innerText = "Detail žádanky na Žádanky testů COVID-19";
+    detailZadankyZadankyTestuCovid19Button.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only")
 
-    button.addEventListener('click', function() {
+    detailZadankyZadankyTestuCovid19Button.addEventListener('click', function() {
         window.open(getRegistrCUDOvereniDetailCisloUrl(Cislo));
     }, false);
     
-    formActionsElement.appendChild(button);
+    formActionsElement.appendChild(detailZadankyZadankyTestuCovid19Button);
 }
