@@ -58,9 +58,7 @@ if (ZadankaToPacientiCovid19Button) {
                         var pacientiCovid19ZadankaUrl = getEregRegistrCUDzadankyZadankaUrl();
     
                         var newUrl = pacientiCovid19ZadankaUrl + url.search;
-    
-                        console.log(newUrl);
-    
+        
                         chrome.tabs.update({url: newUrl});
                 }
             });
@@ -83,9 +81,7 @@ if (ZadankaToPacientiCovid19Button) {
                         var pacientiCovid19ZadankaUrl = getEregRegistrCUDzadankyZadankaUrl();
     
                         var newUrl = pacientiCovid19ZadankaUrl + url.search;
-    
-                        console.log(newUrl);
-    
+        
                         chrome.tabs.update({url: newUrl});
                 }
             });
