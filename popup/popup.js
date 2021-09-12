@@ -16,8 +16,12 @@ function getEregRegistrUrl() {
     return "https://" + getEregRegistrDomain();
 } 
 
+function getRegistrZadankaPage() {
+    return "/Registr/CUD/Zadanka";
+}
+
 function getRegistrZadankaUrl() {
-    return getRegistrUrl() + "/Registr/CUD/Zadanka";
+    return getRegistrUrl() + getRegistrZadankaPage();
 }
 
 function getRegistrZadankaOdberneMistoPage() {
@@ -52,7 +56,7 @@ if (ZadankaToPacientiCovid19Button) {
                     url.origin == getRegistrUrl() &&
                     (
                         url.pathname == getRegistrZadankaOdberneMistoPage() ||
-                        url.pathname == getEregRegistrCUDzadankyZadankaPage()
+                        url.pathname == getRegistrZadankaPage()
                     )
                     ) {
                         var pacientiCovid19ZadankaUrl = getEregRegistrCUDzadankyZadankaUrl();
@@ -75,7 +79,7 @@ if (ZadankaToPacientiCovid19Button) {
                     url.origin == getRegistrUrl() &&
                     (
                         url.pathname == getRegistrZadankaOdberneMistoPage() ||
-                        url.pathname == getEregRegistrCUDzadankyZadankaPage()
+                        url.pathname == getRegistrZadankaPage()
                     )
                     ) {
                         var pacientiCovid19ZadankaUrl = getEregRegistrCUDzadankyZadankaUrl();
