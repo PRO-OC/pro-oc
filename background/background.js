@@ -141,7 +141,7 @@ function getRegistrCUDOvereniCisloZadankyUrl(kodOsoby, heslo, cisloZadanky) {
   return getRegistrUrl() + "/Registr/CUD/Overeni/Json" + "?" + urlParams.toString();
 }
 
-function getZadanka(cisloZadanky, callback) {
+function getZadankaData(cisloZadanky, callback) {
     chrome.cookies.get({
         url: getRegistrUrl(), 
         name: getRegistrLoginCookieName()
@@ -191,7 +191,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         });
         return true;
     } else if(msg.text === 'GetZadankaData' && msg.data.Cislo) {
-        getZadanka(msg.data.Cislo, function(result) {
+        getZadankaData(msg.data.Cislo, function(result) {
             sendResponse(result);
         });
         return true;
