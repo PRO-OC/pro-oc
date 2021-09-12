@@ -467,7 +467,7 @@ function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrisl
     if(!withoutSubmitButton) {
         var submit = document.createElement("button");
         submit.name = "_submit";
-        submit.type = isSubmitHidden ? "submit" : "hidden";
+        submit.type = "submit";
         submit.setAttribute("class", "button-action ui-button ui-corner-all ui-widget")
         submit.value = "None";
         submit.innerHTML  = "Detail pacienta";
