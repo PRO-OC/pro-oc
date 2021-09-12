@@ -333,12 +333,12 @@ const getCertifikatElementId = "link_registr_cud_overeni_getcertifikat_cislo_" +
 var getCertifikatLinkElement = document.getElementById(getCertifikatElementId);
 
 if(
-    !getCertifikatElement && 
+    !getCertifikatLinkElement && 
     CisloElement && 
     CisloElement.value
     ) {
 
-    var getCertifikatLinkElement = document.createElement("a");
+    getCertifikatLinkElement = document.createElement("a");
  
     getCertifikatLinkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
     getCertifikatLinkElement.setAttribute("id", getCertifikatElementId);
@@ -347,6 +347,53 @@ if(
     getCertifikatLinkElement.setAttribute("role", "button"); 
 
     document.querySelector("div.actions").appendChild(getCertifikatLinkElement);
+}
+
+function vyhledaniPacienta(cisloZadanky) {
+
+    chrome.runtime.sendMessage({
+        "text": "GetZadankaData",
+        "data": {
+            "Cislo": cisloZadanky
+        }
+    }, function (data) {
+        if(data) {
+            var form = createVyhledaniPacientaForm(
+                data.TestovanyJmeno,
+                data.TestovanyPrijmeni,
+                data.TestovanyDatumNarozeniText,
+                data.TestovanyNarodnostKod,
+                data.TestovanyCisloPojistence,
+                true
+            );
+
+            actionsDiv.appendChild(form);
+            form.submit();
+        }
+    });
+}
+
+const detailPacientaButtonElementId = "detail-pacienta-button";
+var detailPacientaButtonElement = document.getElementById(detailPacientaButtonElementId);
+
+if(
+    !detailPacientaButtonElement &&
+    CisloElement &&
+    CisloElement.value
+) {
+    var detailPacientaButtonElement = document.createElement("button");
+    detailPacientaButtonElement.type = "button";
+    detailPacientaButtonElement.id = detailPacientaButtonElementId;
+    detailPacientaButtonElement.innerText = "Detail pacienta";
+    detailPacientaButtonElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid")
+      
+    detailPacientaButtonElement.addEventListener('click', function() {
+
+        vyhledaniPacienta(CisloElement.value);
+
+    }, false);
+
+    document.querySelector("div.actions").appendChild(detailPacientaButtonElement);
 }
 
 
@@ -359,16 +406,17 @@ var CisloPojistenceLabel = document.querySelector('label[for="Zadanka_TestovanyC
 var DatumNarozeniLabel = document.querySelector('label[for="Zadanka_TestovanyDatumNarozeni"]');
 var Narodnost = document.getElementById("TestovanyNarodnost");
 
-function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence) {
-    const detailPacientaId = "detail-pacienta";
-    var detailPacienta = document.getElementById(detailPacientaId);
-    if(detailPacienta) {
+function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence, withoutSubmitButton) {
+    const detailPacientaFormId = "detail-pacienta-form";
+    var form = document.getElementById(detailPacientaFormId);
+    if(form) {
         return;
     }
 
-    var form = document.createElement("form");
+    form = document.createElement("form");
     form.action = getRegistrCUDVyhledaniPacientaUrl();
     form.method = "POST";
+    form.id = detailPacientaFormId;
     form.target = "_blank";
   
   
@@ -416,14 +464,15 @@ function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrisl
         form.appendChild(inputDatumNarozeni);
     }
 
-    var submit = document.createElement("button");
-    submit.name = "_submit";
-    submit.type = "submit";
-    submit.setAttribute("id", detailPacientaId)
-    submit.setAttribute("class", "button-action ui-button ui-corner-all ui-widget")
-    submit.value = "None";
-    submit.innerHTML  = "Detail pacienta";
-    form.appendChild(submit);
+    if(!withoutSubmitButton) {
+        var submit = document.createElement("button");
+        submit.name = "_submit";
+        submit.type = isSubmitHidden ? "submit" : "hidden";
+        submit.setAttribute("class", "button-action ui-button ui-corner-all ui-widget")
+        submit.value = "None";
+        submit.innerHTML  = "Detail pacienta";
+        form.appendChild(submit);
+    }
 
     return form;
 }
@@ -470,7 +519,7 @@ if(
 
     var urlParams = getRegistrCUDZadankyMojeZadankyUrlParams(Jmeno, Prijmeni, CisloPojistence);  
     var url = getRegistrCUDZadankyMojeZadankyUrl() + "?" + urlParams.toString();
-    
+
     vyhledatMojeZadankyLinkElement = document.createElement("a");
     vyhledatMojeZadankyLinkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
     vyhledatMojeZadankyLinkElement.setAttribute("id", vyhledatMojeZadankyLinkElementId);

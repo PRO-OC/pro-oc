@@ -119,6 +119,61 @@ function loadOckoUzisPatientInfo(zadanka, callback) {
     xhr.send(urlParams.toString());
 }
 
+function getRegistrLoginCookieName() {
+  return "MyUniqueKey";
+}
+
+function getRegistrDomain() {
+  return "eregpublicsecure.ksrzis.cz";
+}
+
+function getRegistrUrl() {
+  return "https://" + getRegistrDomain();
+}
+
+function getRegistrCUDOvereniCisloZadankyUrl(kodOsoby, heslo, cisloZadanky) {
+  var urlParams = new URLSearchParams();
+
+  urlParams.set("PracovnikKodOsoby", kodOsoby);
+  urlParams.set("heslo", heslo);
+  urlParams.set("Cislo", cisloZadanky);
+
+  return getRegistrUrl() + "/Registr/CUD/Overeni/Json" + "?" + urlParams.toString();
+}
+
+function getZadanka(cisloZadanky, callback) {
+    chrome.cookies.get({
+        url: getRegistrUrl(), 
+        name: getRegistrLoginCookieName()
+      },
+      function(cookie) {
+
+        if(!cookie) {
+          return;
+        }
+
+        var cookieParams = new URLSearchParams(cookie.value);
+
+        var kodOsoby = cookieParams.get("kodOsoby");
+        var heslo = cookieParams.get("heslo");
+
+        var url = getRegistrCUDOvereniCisloZadankyUrl(kodOsoby, heslo, cisloZadanky);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-Type","application/json; charset=UTF-8");
+        xhr.onreadystatechange = function() {
+          if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+
+            var data = JSON.parse(xhr.responseText);
+
+            callback(data);
+          }
+        };
+        xhr.send();
+    });
+}
+
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     if (msg.text === 'OckoUzisPatientInfo') {
         loadOckoUzisPatientInfo(msg.data, Credentials => {
@@ -132,6 +187,11 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         return true;
     } else if(msg.text === 'StornoZadanka' && msg.data.Cislo) {
         stornoZadanka(msg.data.Cislo, function(result) {
+            sendResponse(result);
+        });
+        return true;
+    } else if(msg.text === 'GetZadankaData' && msg.data.Cislo) {
+        getZadanka(msg.data.Cislo, function(result) {
             sendResponse(result);
         });
         return true;

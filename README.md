@@ -16,11 +16,15 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 
 ![Preview](preview/tlacitko_stahnout_certifikat.PNG)
 
+- Přidává tlačítko **Detail pacienta** na stránku Overovani
+
+![Preview](preview/tlacitko_detail_pacienta_zadanky_covid_19.PNG)
+
 ## Pacienti COVID-19
 
 - Přidává tlačítko **Detail pacienta** na detail žádanky
 
-![Preview](preview/tlaciko_detail_pacienta.PNG)
+![Preview](preview/tlacitko_detail_pacienta.PNG)
 
 - Přidává tlačítko **Vyhledat moje žádanky** na detail pacienta do sekce **Žádanky a testy**
 
