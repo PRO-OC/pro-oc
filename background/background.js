@@ -174,6 +174,30 @@ function getZadankaData(cisloZadanky, callback) {
     });
 }
 
+
+function getRegistrCUDZadankyPacientDetailEditUrlParams(Telefon, Email) {
+    var urlParams = new URLSearchParams();
+    urlParams.set("Pacient.Telefon", Telefon);
+    urlParams.set("Pacient.Email", Email);
+    return urlParams;
+}
+
+function setOckoUzisTelefonEmail(OckoUzisEditLink, Telefon, Email, callback) {
+    var url = OckoUzisEditLink;
+  
+    var urlParams = getRegistrCUDZadankyPacientDetailEditUrlParams(Telefon, Email);
+  
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function() {
+      if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {                                
+        callback();
+      }
+    }
+    xhr.send(urlParams.toString());
+}
+
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     if (msg.text === 'OckoUzisPatientInfo') {
         loadOckoUzisPatientInfo(msg.data, Credentials => {
@@ -194,6 +218,16 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         getZadankaData(msg.data.Cislo, function(result) {
             sendResponse(result);
         });
+        return true;
+    } else if (msg.text === 'setOckoUzisTelefonEmail' && msg.data.EditLink && msg.data.Telefon && msg.data.Email) {
+        setOckoUzisTelefonEmail(
+          msg.data.EditLink, 
+          msg.data.Telefon, 
+          msg.data.Email,
+          function() {
+            sendResponse(true);
+          }
+        );
         return true;
     }
 });

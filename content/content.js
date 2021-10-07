@@ -613,3 +613,125 @@ if(
     
     formActionsElement.appendChild(detailZadankyZadankyTestuCovid19Button);
 }
+
+
+
+
+const KontaktniUdajeElement = Array.from(document.querySelectorAll('th')).find(el => el.textContent.includes('Kontaktní údaje'));
+const printDiv = document.getElementById("printDiv");
+
+if(
+    printDiv &&
+    KontaktniUdajeElement
+) {
+
+    chrome.runtime.sendMessage({
+        "text": "GetZadankaData",
+        "data": {
+            "Cislo": CisloElement.value,
+        }
+    }, function(ZadankaData) {
+
+        if(!ZadankaData) {
+            return;
+        }
+
+        const Jmeno = ZadankaData.TestovanyJmeno;
+        const Prijmeni = ZadankaData.TestovanyPrijmeni;
+        const StatniPrislusnost = ZadankaData.TestovanyNarodnostKod;
+        const CisloPojistence = ZadankaData.TestovanyCisloPojistence;
+        const Telefon = ZadankaData.TestovanyTelefon;
+        const Email = ZadankaData.TestovanyEmail;
+
+        chrome.runtime.sendMessage({
+            "text": "OckoUzisPatientInfo",
+            "data": {
+                "Jmeno": Jmeno,
+                "Prijmeni": Prijmeni,
+                "StatniPrislusnost": StatniPrislusnost,
+                "CisloPojistence": CisloPojistence
+            }
+        }, function(PatientInfo) {
+            if(PatientInfo && PatientInfo.Cislo) {
+                var tableElement = document.createElement("table");
+                tableElement.setAttribute("class", "zadanka");
+                tableElement.setAttribute("style", "width: 100%;");
+
+                var tbodyElement = document.createElement("tbody");
+                tableElement.appendChild(tbodyElement);
+
+                var trHeaderElement = document.createElement("tr");
+                var thHeaderElement = document.createElement("th");
+                thHeaderElement.setAttribute("colspan", 2);
+                thHeaderElement.innerText = "Údaje na profilu / Profile information";
+                trHeaderElement.appendChild(thHeaderElement);
+                tableElement.appendChild(trHeaderElement);
+
+                var trTelefonElement = document.createElement("tr");
+                var tdTelefonElement =  document.createElement("td");
+                tdTelefonElement.setAttribute("style", "width: 30%;");
+                tdTelefonElement.innerText = "Telefon / Telephone";
+                trTelefonElement.appendChild(tdTelefonElement);
+                var tdTelefon2Element =  document.createElement("td");
+                tdTelefon2Element.innerText = PatientInfo.Telefon;
+                trTelefonElement.appendChild(tdTelefon2Element);
+                tableElement.appendChild(trTelefonElement);
+
+                var trEmailElement = document.createElement("tr");
+                var tdEmailElement =  document.createElement("td");
+                tdEmailElement.setAttribute("style", "width: 30%;");
+                tdEmailElement.innerText = "E-mail / E-mail address";
+                trEmailElement.appendChild(tdEmailElement);
+                var tdEmail2Element =  document.createElement("td");
+                tdEmail2Element.innerText = PatientInfo.Email;
+                trEmailElement.appendChild(tdEmail2Element);
+                tableElement.appendChild(trEmailElement);
+
+                printDiv.insertBefore(tableElement, KontaktniUdajeElement.parentNode.parentNode.parentNode.nextSibling);
+                printDiv.insertBefore(document.createElement("br"), tableElement);
+
+                var trUlozitNaProfil = document.createElement("tr");
+
+                var buttonTd = document.createElement("td");
+
+                var button = document.createElement("button");
+                button.setAttribute("id", "UlozitPrihlasovaciUdajeNaProfil");
+                button.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
+                button.setAttribute("type", "button");
+                button.innerHTML = "Uložit na profil";
+
+                var setOckoUzisTelefonEmailDivElement = document.createElement("div");
+                setOckoUzisTelefonEmailDivElement.setAttribute("style", "padding: 0.65em; display: table-row; border: 0;");
+                setOckoUzisTelefonEmailDivElement.appendChild(button);
+
+                button.addEventListener('click', function() {
+                    chrome.runtime.sendMessage({
+                        "text": "setOckoUzisTelefonEmail",
+                        "data": {
+                            "EditLink": PatientInfo.EditLink,
+                            "Telefon": Telefon,
+                            "Email": Email
+                        }
+                    }, function() {
+                        var resultElementId = "UlozitPrihlasovaciUdajeNaProfilResult";
+                        var resultElement = document.getElementById(resultElementId);
+                        if(!resultElement) {
+                            resultElement = document.createElement("span");
+                            resultElement.setAttribute("style", "font-weight: bold; display: table-cell; vertical-align: middle; padding-left: 5px;");
+                            resultElement.setAttribute("id", resultElementId);
+                            resultElement.innerHTML = "Uloženo";
+                            setOckoUzisTelefonEmailDivElement.appendChild(resultElement);
+                        }
+                    });
+                }, false);
+
+                buttonTd.appendChild(setOckoUzisTelefonEmailDivElement);
+
+                trUlozitNaProfil.appendChild(document.createElement("td"));
+                trUlozitNaProfil.appendChild(buttonTd);
+
+                KontaktniUdajeElement.parentNode.parentNode.appendChild(trUlozitNaProfil);
+            }
+        });
+    });
+}

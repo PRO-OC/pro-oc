@@ -45,3 +45,7 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 - Přidává možnost vidět a změnit přihlašovací údaje do aplikace [Tečka](https://ockodoc.mzcr.cz/napoveda/tecka/cz/) nebo [ocko.uzis.cz](https://ocko.uzis.cz/) včetně tlačítka **Detail pacienta**
 
 ![Preview](preview/moznost_ulozit_prihlasovaci_udaje_na_zadance.PNG)
+
+- Na stránce ověření žádanky zobrazuje údaje na profilu (email, telefon) a umožňuje tlačítkem **Uložit na profil** tyto údaje přepsat údaji ze žádanky
+
+![Preview](preview/zobrazeni_udaju_na_profilu_pri_overeni_zadanky.PNG)
