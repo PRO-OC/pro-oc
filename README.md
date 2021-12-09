@@ -26,6 +26,10 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 
 ![Preview](preview/tlacitko_detail_pacienta.PNG)
 
+- Přidává tlačítko **Vyhledat pacienta** na detail pacienta do sekce **Detail pacienta**
+
+![Preview](preview/tlacitko_vyhledat_pacienta.png)
+
 - Přidává tlačítko **Vyhledat moje žádanky** na detail pacienta do sekce **Žádanky a testy**
 
 ![Preview](preview/tlacitko_vyhledat_moje_zadanky.PNG)

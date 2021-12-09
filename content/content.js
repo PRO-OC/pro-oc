@@ -40,6 +40,20 @@ function getRegistrZadankyDomainUrl() {
     return "https://" + getRegistrZadankyDomain();
 }
 
+function getRegistrCUDZadankyVyhledaniPacientaPrehledVsechUrlParams(Jmeno, Prijmeni, DatumNarozeni) {
+    var urlParams = new URLSearchParams();
+    urlParams.set("Filter.Jmeno", Jmeno);
+    urlParams.set("Filter.Prijmeni", Prijmeni);
+    urlParams.set("Filter.DatumNarozeni", DatumNarozeni);
+    urlParams.set("_submit", "None");
+    urlParams.set("Filter.PageSize", 50);
+    return urlParams;
+}
+
+function getRegistrCUDZadankyVyhledaniPacientaPrehledVsechUrl() {
+    return getEregRegistrUrl() + "/Registr/CUDZadanky/VyhledaniPacienta/PrehledVsech";
+}
+
 const TestovanyJmenoElement = document.getElementById("TestovanyJmeno");
 const TestovanyPrijmeniElement = document.getElementById("TestovanyPrijmeni");
 const TestovanyNarodnostElement = document.getElementById("TestovanyNarodnost");
@@ -734,4 +748,35 @@ if(
             }
         });
     });
+}
+
+const vyhledatPacientaVPacientiLinkElementId = "vyhledat-v-pacienti";
+var vyhledatPacientaVPacientiLinkElement = document.getElementById(vyhledatPacientaVPacientiLinkElementId);
+var DatumNarozeniDetailProfilu = document.querySelector('label[for="PacientDatumNarozeniText"]');
+
+var detailPacientaActions = document.querySelector('.actions');
+
+if(
+    !vyhledatPacientaVPacientiLinkElement &&
+    JmenoLabelDetailProfilu && JmenoLabelDetailProfilu.nextElementSibling.innerText &&
+    PrijmeniLabelDetailProfilu && PrijmeniLabelDetailProfilu.nextElementSibling.innerText &&
+    DatumNarozeniDetailProfilu && DatumNarozeniDetailProfilu.nextElementSibling.innerText &&
+    detailPacientaActions
+) {
+    var Jmeno = JmenoLabelDetailProfilu.nextElementSibling.innerText;
+    var Prijmeni = PrijmeniLabelDetailProfilu.nextElementSibling.innerText;
+    var DatumNarozeni = DatumNarozeniDetailProfilu.nextElementSibling.innerText;
+
+    var url = getRegistrCUDZadankyVyhledaniPacientaPrehledVsechUrl();
+    var urlParams = getRegistrCUDZadankyVyhledaniPacientaPrehledVsechUrlParams(Jmeno, Prijmeni, DatumNarozeni);  
+    var vyhledatPacientaVPacientiLink = url + "?" + urlParams.toString();
+
+    vyhledatPacientaVPacientiLinkElement = document.createElement("a");
+    vyhledatPacientaVPacientiLinkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
+    vyhledatPacientaVPacientiLinkElement.setAttribute("id", vyhledatPacientaVPacientiLinkElementId);
+    vyhledatPacientaVPacientiLinkElement.setAttribute("href", vyhledatPacientaVPacientiLink);
+    vyhledatPacientaVPacientiLinkElement.text = "Vyhledat pacienta";
+    vyhledatPacientaVPacientiLinkElement.setAttribute("role", "button");
+
+    detailPacientaActions.appendChild(vyhledatPacientaVPacientiLinkElement);
 }
