@@ -229,5 +229,56 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
           }
         );
         return true;
+    } else if(msg.text === 'getFromUrlPacientId') {
+        if(typeof browser === 'undefined') {
+            chrome.tabs.query({active: true}, function(tabs) {
+
+                if(!tabs[0]) {
+                    return;
+                }
+    
+                var url = tabs[0].url;
+
+                var pacientId = undefined;
+                var urlParams = new URLSearchParams(url);
+                
+                if(urlParams.has("id")) {
+                    pacientId = urlParams.get("id");
+                } else {
+                    pacientId = url.split("/").pop();
+                }
+                sendResponse(pacientId);
+            });
+        } else {
+            browser.tabs.query({active: true}).then(function (tabs) {
+
+                if(!tabs[0]) {
+                    return;
+                }
+
+                var url = tabs[0].url;
+
+                var pacientId = undefined;
+                var urlParams = new URLSearchParams(url);
+                
+                if(urlParams.has("id")) {
+                    pacientId = urlParams.get("id");
+                } else {
+                    pacientId = url.split("/").pop();
+                }
+                sendResponse(pacientId);
+
+            });
+        }
+        return true;
+    } else if (msg.text === 'DuplikatyPacienta' && msg.data.Jmeno && msg.data.Prijmeni && msg.data.DatumNarozeni) {
+
+        data1 = msg.data;
+        data1.DatumNarozeni = "01" + msg.data.DatumNarozeni.substring(msg.data.DatumNarozeni.indexOf("."), msg.data.DatumNarozeni.length);
+
+        loadOckoUzisPatientInfo(msg.data, function(PacientInfo) {
+          sendResponse(PacientInfo);
+        });
+        return true;
     }
 });

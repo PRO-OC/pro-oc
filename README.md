@@ -53,3 +53,7 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 - Na stránce ověření žádanky zobrazuje údaje na profilu (email, telefon) a umožňuje tlačítkem **Uložit na profil** tyto údaje přepsat údaji ze žádanky
 
 ![Preview](preview/zobrazeni_udaju_na_profilu_pri_overeni_zadanky.PNG)
+
+- Přidává tlačítko **Automaticky sloučit** na detail profilu
+
+![Preview](preview/tlacitko_automaticky_sloucit.PNG)

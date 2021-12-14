@@ -32,6 +32,10 @@ function getRegistrCUDOvereniGetCertifikatUrl(Cislo) {
     return getRegistrZadankyDomainUrl() + "/Registr/CUD/Overeni/GetCertifikat?Cislo=" + Cislo;
 }
 
+function getRegistrCUDZadankyPacientDetailSloucitPacientyUrl(callback) {
+    callback(getEregRegistrUrl() + "/Registr/CUDZadanky/PacientDetail/SloucitPacienty");
+}
+
 function getRegistrZadankyDomain() {
     return "eregpublicsecure.ksrzis.cz";
 }
@@ -750,9 +754,17 @@ if(
     });
 }
 
+var JmenoLabelDetailProfilu = document.querySelector('label[for="Pacient_Jmeno"]');
+var PrijmeniLabelDetailProfilu = document.querySelector('label[for="Pacient_Prijmeni"]');
+var CisloPojistenceDetailProfilu = document.querySelector('label[for="Pacient_CisloPojistence"]');
+var DatumNarozeniDetailProfilu = document.querySelector('label[for="PacientDatumNarozeniText"]');
+var CisloPacientaDetailprofilu = document.querySelector('label[for="Pacient_CisloPacienta"]');
+var StatniPrislusnostDetailProfilu = document.querySelector('label[for="Pacient_RobObcanstviZemeKod"');
+var StatniPrislusnostKodDetailProfilu = document.querySelector('label[for="Pacient_NarodnostKod"');
+var EditLinkDetailProfilu = document.querySelector('a[id^="link_registr_cudzadanky_pacientdetail_cizinec_"]');
+
 const vyhledatPacientaVPacientiLinkElementId = "vyhledat-v-pacienti";
 var vyhledatPacientaVPacientiLinkElement = document.getElementById(vyhledatPacientaVPacientiLinkElementId);
-var DatumNarozeniDetailProfilu = document.querySelector('label[for="PacientDatumNarozeniText"]');
 
 var detailPacientaActions = document.querySelector('.actions');
 
@@ -779,4 +791,105 @@ if(
     vyhledatPacientaVPacientiLinkElement.setAttribute("role", "button");
 
     detailPacientaActions.appendChild(vyhledatPacientaVPacientiLinkElement);
+}
+
+
+const vyhledatDuplikatyPacientaLinkElementId = "sloucit-duplikaty-pacienta";
+var vyhledatDuplikatyPacientaLinkElement = document.getElementById(vyhledatDuplikatyPacientaLinkElementId);
+
+
+var detailPacientaAllActions = document.querySelectorAll('.actions');
+
+// pouze cizinci
+if(
+    !vyhledatDuplikatyPacientaLinkElement &&
+    CisloPacientaDetailprofilu && CisloPacientaDetailprofilu.nextElementSibling.innerText &&
+    JmenoLabelDetailProfilu && JmenoLabelDetailProfilu.nextElementSibling.innerText &&
+    PrijmeniLabelDetailProfilu && PrijmeniLabelDetailProfilu.nextElementSibling.innerText &&
+    DatumNarozeniDetailProfilu && DatumNarozeniDetailProfilu.nextElementSibling.innerText &&    
+    ((StatniPrislusnostDetailProfilu && StatniPrislusnostDetailProfilu.nextElementSibling.innerText) || (StatniPrislusnostKodDetailProfilu && StatniPrislusnostKodDetailProfilu.nextElementSibling.innerText)) &&
+    detailPacientaAllActions
+) {
+    var lastDetailPacientaActions = detailPacientaAllActions[detailPacientaAllActions.length - 1];
+
+    vyhledatDuplikatyPacientaLinkElement = document.createElement("a");
+    vyhledatDuplikatyPacientaLinkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
+    vyhledatDuplikatyPacientaLinkElement.setAttribute("id", vyhledatDuplikatyPacientaLinkElementId);
+    vyhledatDuplikatyPacientaLinkElement.text = "Sloučit automaticky";
+    vyhledatDuplikatyPacientaLinkElement.setAttribute("role", "button");
+
+    vyhledatDuplikatyPacientaLinkElement.addEventListener('click', function() {
+
+        var Jmeno = JmenoLabelDetailProfilu.nextElementSibling.innerText;
+        var Prijmeni = PrijmeniLabelDetailProfilu.nextElementSibling.innerText;
+        var DatumNarozeni = DatumNarozeniDetailProfilu.nextElementSibling.innerText;
+        var CisloPojistence = CisloPojistenceDetailProfilu.nextElementSibling.innerText;
+        var ZemeKod_Title = StatniPrislusnostDetailProfilu ? StatniPrislusnostDetailProfilu.nextElementSibling.innerText : StatniPrislusnostKodDetailProfilu ? StatniPrislusnostKodDetailProfilu.nextElementSibling.innerText : undefined;
+
+        var StatniPrislusnost = undefined;
+        if(EditLinkDetailProfilu) {
+            var StatniPrislusnostTemp = EditLinkDetailProfilu.href.substring(EditLinkDetailProfilu.href.indexOf("ZemeKod=") + 8, EditLinkDetailProfilu.href.length - 1);
+            StatniPrislusnost = StatniPrislusnostTemp.substring(0, StatniPrislusnostTemp.indexOf("&"));
+        }
+        var CisloPacienta = CisloPacientaDetailprofilu.nextElementSibling.innerText;
+
+        chrome.runtime.sendMessage({
+            "text": "DuplikatyPacienta",
+            "data": {
+                "Jmeno": Jmeno,
+                "Prijmeni": Prijmeni,
+                "DatumNarozeni": DatumNarozeni,
+                "CisloPojistence": CisloPojistence,
+                "StatniPrislusnost": StatniPrislusnost,
+                "ZemeKod_Title": ZemeKod_Title,
+            }
+        }, function(PacientInfo) {
+                       
+            if(!PacientInfo.Cislo) {
+                alert("Pacient ke sloučení nenalezen.");
+            } else {
+                chrome.runtime.sendMessage({
+                    "text": "getFromUrlPacientId"
+                }, function(pacientId) {
+                    getRegistrCUDZadankyPacientDetailSloucitPacientyUrl(function(url) {
+
+                        const sloucitPacientaFormId = "sloucit-duplikaty-pacienta-form";
+                        var form = document.getElementById(sloucitPacientaFormId);
+                
+                        if(form) {
+                            return;
+                        }
+
+                        form = document.createElement("form");
+                        form.action = url;
+                        form.method = "POST";
+                        form.target = "_blank";
+
+                        var inputId = document.createElement("input");
+                        inputId.type = "hidden";
+                        inputId.value = pacientId;
+                        inputId.name = "Id";
+                        form.appendChild(inputId);
+
+                        var inputSlucovany = document.createElement("input");
+                        inputSlucovany.type = "hidden";
+                        inputSlucovany.value = PacientInfo.Cislo;
+                        inputSlucovany.name = "SlucovanyCislo";
+                        form.appendChild(inputSlucovany);
+
+                        var inputSlucujici = document.createElement("input");
+                        inputSlucujici.type = "hidden";
+                        inputSlucujici.value = CisloPacienta;
+                        inputSlucujici.name = "SlucujiciCislo";
+                        form.appendChild(inputSlucujici);
+
+                        vyhledatDuplikatyPacientaLinkElement.parentNode.append(form);
+                        form.submit();
+                    });
+                });
+            }
+        });
+    }, false);
+
+    lastDetailPacientaActions.appendChild(vyhledatDuplikatyPacientaLinkElement);
 }
