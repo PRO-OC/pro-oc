@@ -34,6 +34,10 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 
 ![Preview](preview/tlacitko_vyhledat_moje_zadanky.PNG)
 
+- Přidává tlačítko **Sloučit automaticky** na detail profilu
+
+![Preview](preview/tlacitko_automaticky_sloucit.png)
+
 - Přidává tlačítko **Stornovat žádanku** i na detail PCR žádanky se zaškrtnutým **Provedl jsem odběr**
 
 ## Žádanky testů COVID-19 + Pacienti COVID-19
@@ -53,7 +57,3 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 - Na stránce ověření žádanky zobrazuje údaje na profilu (email, telefon) a umožňuje tlačítkem **Uložit na profil** tyto údaje přepsat údaji ze žádanky
 
 ![Preview](preview/zobrazeni_udaju_na_profilu_pri_overeni_zadanky.PNG)
-
-- Přidává tlačítko **Sloučit automaticky** na detail profilu
-
-![Preview](preview/tlacitko_automaticky_sloucit.png)
