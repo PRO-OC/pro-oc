@@ -54,6 +54,6 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 
 ![Preview](preview/zobrazeni_udaju_na_profilu_pri_overeni_zadanky.PNG)
 
-- Přidává tlačítko **Automaticky sloučit** na detail profilu
+- Přidává tlačítko **Sloučit automaticky** na detail profilu
 
-![Preview](preview/tlacitko_automaticky_sloucit.PNG)
+![Preview](preview/tlacitko_automaticky_sloucit.png)
