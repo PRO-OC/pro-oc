@@ -24,12 +24,16 @@ function getRegistrCUDZadankyMojeZadankyUrl() {
     return getEregRegistrUrl() + "/Registr/CUDZadanky/MojeZadanky";
 }
 
+function getRegistrCUDOvereniUrl() {
+    return "/Registr/CUD/Overeni";
+}
+
 function getRegistrCUDOvereniDetailCisloUrl(Cislo) {
-    return getRegistrZadankyDomainUrl() + "/Registr/CUD/Overeni/DetailCislo?Cislo=" + Cislo;
+    return getRegistrZadankyDomainUrl() + getRegistrCUDOvereniUrl() + "/DetailCislo?Cislo=" + Cislo;
 }
 
 function getRegistrCUDOvereniGetCertifikatUrl(Cislo) {
-    return getRegistrZadankyDomainUrl() + "/Registr/CUD/Overeni/GetCertifikat?Cislo=" + Cislo;
+    return getRegistrZadankyDomainUrl() + getRegistrCUDOvereniUrl() + "/GetCertifikat?Cislo=" + Cislo;
 }
 
 function getRegistrCUDZadankyPacientDetailSloucitPacientyUrl(callback) {
@@ -73,18 +77,23 @@ const formActionsElement = document.querySelector(".actions");
 
 if(TestovanyJmenoElement) {
     TestovanyJmenoElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
+    TestovanyJmenoElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
 }
 if(TestovanyPrijmeniElement) {
     TestovanyPrijmeniElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
+    TestovanyPrijmeniElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
 }
 if(TestovanyCisloPojistenceElement) {
     TestovanyCisloPojistenceElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
+    TestovanyCisloPojistenceElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
 }
 if(TestovanyNarodnostElement) {
     TestovanyNarodnostElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
+    TestovanyNarodnostElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
 }
 if(TestovanyDatumNarozeniElement) {
     TestovanyDatumNarozeniElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
+    TestovanyDatumNarozeniElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
 }
 
 function removeReadOnlyOckoUzisPatientCredentials() {
@@ -239,6 +248,76 @@ function setOckoUzisPatientCredentials(Telefon, Email) {
     OckoUzisEmailElement.value = Email;
 }
 
+function loadAndShowOckoUzisLastPatientActiveRequestIfExists() {
+    if(
+        editFormElement &&
+        TestovanyJmenoElement && TestovanyJmenoElement.value && 
+        TestovanyPrijmeniElement && TestovanyPrijmeniElement.value &&
+        TestovanyNarodnostElement && TestovanyNarodnostElement.value &&
+            (
+                (TestovanyNarodnostElement.value == "CZ" && TestovanyCisloPojistenceElement && TestovanyCisloPojistenceElement.value) || 
+                (TestovanyNarodnostElement.value != "CZ" && TestovanyDatumNarozeniElement && TestovanyDatumNarozeniElement.value)
+            )
+        ) {
+
+            var Jmeno = TestovanyJmenoElement.value;
+            var Prijmeni = TestovanyPrijmeniElement.value;
+            var StatniPrislusnost = TestovanyNarodnostElement.value;
+            var CisloPojistence = TestovanyCisloPojistenceElement.value;
+            var DatumNarozeni = TestovanyDatumNarozeniElement.value;
+
+            chrome.runtime.sendMessage({
+                "text": "GetZadankaData",
+                "data": {
+                    "Jmeno": Jmeno,
+                    "Prijmeni": Prijmeni,
+                    "StatniPrislusnost": StatniPrislusnost,
+                    "CisloPojistence": CisloPojistence,
+                    "DatumNarozeni": DatumNarozeni
+                }
+            }, function (zadankaData) {
+                var fieldsetId = "aktivni-zadanka-fieldset";
+
+                if(zadankaData && zadankaData.Vysledek == "ZadankaExistuje") {
+
+                    var zkontrolovatZadankuFormId = "zkontrolovat-zadanku-form-id";
+                    var zkontrolovatZadankuForm = document.getElementById(zkontrolovatZadankuFormId);
+ 
+                    if(!zkontrolovatZadankuForm) {
+
+                        var zkontrolovatZadankuForm = createZkontrolovatZadankuForm("Zkontrolovat žádanku", zkontrolovatZadankuFormId, zadankaData);
+
+                        var fieldset = document.createElement("fieldset");
+                        fieldset.setAttribute("id", fieldsetId);
+                        fieldset.setAttribute("style", "display: block;");
+                        var legend = document.createElement("legend");
+                        legend.innerText = "Aktivní žádanka";
+                        fieldset.appendChild(legend);
+
+                        var div = document.createElement("div");
+                        div.setAttribute("class", "oneColumn");
+                        div.setAttribute("class", "actions");
+                        
+                        div.appendChild(zkontrolovatZadankuForm);
+
+                        var div2 = document.createElement("div");
+                        div2.setAttribute("class", "oneColumn");
+
+                        fieldset.appendChild(div);
+
+                        editFormElement.insertBefore(fieldset, editFormElement.firstChild);
+                    } else {
+                        var fieldset = document.getElementById(fieldsetId);
+                        fieldset.setAttribute("style", "display: block;");
+                    }
+                } else {
+                    var fieldset = document.getElementById(fieldsetId);
+                    fieldset.setAttribute("style", "display: none;");
+                }
+            });
+        }
+}
+
 function loadAndSetOckoUzisPatientInformation() {
     if(
         TestovanyJmenoElement && TestovanyJmenoElement.value && 
@@ -306,6 +385,7 @@ function setOckoUzisPatientDetailLink(link) {
     linkElement.setAttribute("href", link);
 }
 
+loadAndShowOckoUzisLastPatientActiveRequestIfExists();
 loadAndSetOckoUzisPatientInformation();
 
 if(editFormElement && TestovanyTelefon) {
@@ -423,6 +503,68 @@ var PrijmeniLabel = document.querySelector('label[for="Zadanka_TestovanyPrijmeni
 var CisloPojistenceLabel = document.querySelector('label[for="Zadanka_TestovanyCisloPojistence"]');
 var DatumNarozeniLabel = document.querySelector('label[for="Zadanka_TestovanyDatumNarozeni"]');
 var Narodnost = document.getElementById("TestovanyNarodnost");
+
+function createZkontrolovatZadankuForm(text, id, ZadankaData) {
+
+    var url = getRegistrCUDOvereniUrl();
+
+    var form = document.createElement("form");
+    form.action = url;
+    form.id = id;
+    form.method = "POST";
+    form.target = "_blank";
+  
+    var inputTypVyhledavani = document.createElement("input");
+    inputTypVyhledavani.type = "hidden";
+    inputTypVyhledavani.name = "TypVyhledavani";
+    form.appendChild(inputTypVyhledavani);
+
+    if (ZadankaData.Cislo) {
+        inputTypVyhledavani.value = "Cislo";
+
+        var inputCislo = document.createElement("input");
+        inputCislo.type = "hidden";
+        inputCislo.value = ZadankaData.Cislo;
+        inputCislo.name = "Cislo";
+        form.appendChild(inputCislo);
+    } else if (ZadankaData.StatniPrislusnost == "CZ") {
+        inputTypVyhledavani.value = "RC";
+
+        var inputCisloPojistence = document.createElement("input");
+        inputCisloPojistence.type = "hidden";
+        inputCisloPojistence.value = ZadankaData.CisloPojistence;
+        inputCisloPojistence.name = "TestovanyCisloPojistence";
+        form.appendChild(inputCisloPojistence);
+    } else {
+        inputTypVyhledavani.value = "JmenoPrijmeniDatumNarozeni";
+
+        var inputJmeno = document.createElement("input");
+        inputJmeno.type = "hidden";
+        inputJmeno.value = ZadankaData.Jmeno;
+        inputJmeno.name = "TestovanyJmeno";
+        form.appendChild(inputJmeno);
+
+        var inputPrijmeni = document.createElement("input");
+        inputPrijmeni.type = "hidden";
+        inputPrijmeni.value = ZadankaData.Jmeno;
+        inputPrijmeni.name = "TestovanyPrijmeni";
+        form.appendChild(inputPrijmeni);
+
+        var inputDatumNarozeni = document.createElement("input");
+        inputDatumNarozeni.type = "hidden";
+        inputDatumNarozeni.value = ZadankaData.DatumNarozeni;
+        inputDatumNarozeni.name = "TestovanyDatumNarozeni";
+        form.appendChild(inputDatumNarozeni);
+    }
+
+    var inputSubmit = document.createElement("button");
+    inputSubmit.type = "submit";
+    inputSubmit.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only");
+    inputSubmit.innerText = text;
+    form.appendChild(inputSubmit);
+
+    return form;
+}
 
 function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence, withoutSubmitButton) {
     const detailPacientaFormId = "detail-pacienta-form";

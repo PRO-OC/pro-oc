@@ -20,6 +20,10 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 
 ![Preview](preview/tlacitko_detail_pacienta_zadanky_covid_19.PNG)
 
+- Přidává zobrazení aktivních žádanek a tlačítko **Zkontrolovat žádanku** při vytváření nové žádanky
+
+![Preview](preview/aktivni_zadanky_tlacitko_zkontrolovat_zadanku.png)
+
 ## Pacienti COVID-19
 
 - Přidává tlačítko **Detail pacienta** na detail žádanky

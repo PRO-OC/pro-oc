@@ -131,17 +131,30 @@ function getRegistrUrl() {
   return "https://" + getRegistrDomain();
 }
 
-function getRegistrCUDOvereniCisloZadankyUrl(kodOsoby, heslo, cisloZadanky) {
-  var urlParams = new URLSearchParams();
-
-  urlParams.set("PracovnikKodOsoby", kodOsoby);
-  urlParams.set("heslo", heslo);
-  urlParams.set("Cislo", cisloZadanky);
-
-  return getRegistrUrl() + "/Registr/CUD/Overeni/Json" + "?" + urlParams.toString();
+function getRegistrCUDOvereniCisloZadankyUrl() {
+    return getRegistrUrl() + "/Registr/CUD/Overeni/Json";
 }
 
-function getZadankaData(cisloZadanky, callback) {
+function getRegistrCUDOvereniCisloZadankyUrlParams(kodOsoby, heslo, zadankaData) {
+    var urlParams = new URLSearchParams();
+
+    urlParams.set("PracovnikKodOsoby", kodOsoby);
+    urlParams.set("heslo", heslo);
+
+    if(zadankaData.Cislo) {
+        urlParams.set("Cislo", zadankaData.Cislo);
+    } else if (zadankaData.StatniPrislusnost && zadankaData.StatniPrislusnost == "CZ") {
+        urlParams.set("TestovanyCisloPojistence", zadankaData.CisloPojistence);
+    } else if (zadankaData.StatniPrislusnost && zadankaData.StatniPrislusnost != "CZ") {
+        urlParams.set("TestovanyJmeno", zadankaData.Jmeno);
+        urlParams.set("TestovanyPrijmeni", zadankaData.Prijmeni);
+        urlParams.set("TestovanyDatumNarozeni", zadankaData.DatumNarozeni);
+    }
+
+    return urlParams;
+}
+
+function getZadankaData(zadankaData, callback) {
     chrome.cookies.get({
         url: getRegistrUrl(), 
         name: getRegistrLoginCookieName()
@@ -157,10 +170,12 @@ function getZadankaData(cisloZadanky, callback) {
         var kodOsoby = cookieParams.get("kodOsoby");
         var heslo = cookieParams.get("heslo");
 
-        var url = getRegistrCUDOvereniCisloZadankyUrl(kodOsoby, heslo, cisloZadanky);
+        var url = getRegistrCUDOvereniCisloZadankyUrl();
+
+        var urlParams = getRegistrCUDOvereniCisloZadankyUrlParams(kodOsoby, heslo, zadankaData);
 
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
+        xhr.open("GET", url + "?" + urlParams.toString(), true);
         xhr.setRequestHeader("Content-Type","application/json; charset=UTF-8");
         xhr.onreadystatechange = function() {
           if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
@@ -214,8 +229,8 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
             sendResponse(result);
         });
         return true;
-    } else if(msg.text === 'GetZadankaData' && msg.data.Cislo) {
-        getZadankaData(msg.data.Cislo, function(result) {
+    } else if(msg.text === 'GetZadankaData' && msg.data) {
+        getZadankaData(msg.data, function(result) {
             sendResponse(result);
         });
         return true;
