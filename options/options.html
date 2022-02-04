@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="options.css"/>
+  </head>
+
+  <body>
+    <form id="zadanka">
+      <label style="font-weight: bold;">Nastavení zdravotnického zařízení, které vystavuje žádanku:</label>
+      <br>
+      <br>
+      <label name="OdberneMistoKod">Kód preferovaného odběrného místa</label>
+      <input type="text" name="OdberneMistoKod" id="OdberneMistoKod">
+      <label name="OrdinaceEmail">E-mail ordinace</label>
+      <input type="email" name="OrdinaceEmail" id="OrdinaceEmail">
+      <label name="OrdinaceTelefon">Telefon ordinace</label>
+      <input type="tel" name="OrdinaceTelefon" id="OrdinaceTelefon">
+      <label name="OrdinaceICPAG">IČP u AG</label>
+      <input type="text" name="OrdinaceICPAG" id="OrdinaceICPAG">
+      <label name="OrdinaceICPPCR">IČP u PCR</label>
+      <input type="text" name="OrdinaceICPPCR" id="OrdinaceICPPCR">
+      <label name="PCRProvedenOdber">Předvyplněný proveden odběr u PCR</label>
+      <input type="checkbox" name="PCRProvedenOdber" id="PCRProvedenOdber">
+      <label name="AGVyrobceTestuKod">Výrobce u AG (vyčkejte než se načte)</label>
+      <select name="AGVyrobceTestuKod" id="AGVyrobceTestuKod"></select>
+      <br>
+      <br>
+      <label style="font-weight: bold;">Obecná nastavení:</label>
+      <br>
+      <br>
+      <label name="IsDisabledRedirectToPacientiCovid19">Při použití šablony zakázat přesměrování do modulu Pacienti Covid-19</label>
+      <input type="checkbox" name="IsDisabledRedirectToPacientiCovid19" id="IsDisabledRedirectToPacientiCovid19">
+      <label name="IsDisabledPopupAboutParamsFromPosledniZadanka">Při použití šablony zakázat napovídání Údaje o pobytu a Rizikové povolání z poslední žádanky</label>
+      <input type="checkbox" name="IsDisabledPopupAboutParamsFromPosledniZadanka" id="IsDisabledPopupAboutParamsFromPosledniZadanka">
+      <label name="AGVyrobceListUrl">Url adresa všech výrobců AG testů</label>
+      <input type="text" name="AGVyrobceListUrl" id="AGVyrobceListUrl">
+      <label name="UseTestRegisters">Použít testovací registry</label>
+      <input type="checkbox" name="UseTestRegisters" id="UseTestRegisters">
+      <div class="submit">
+        <button type="submit">Uložit změny (před zavřením vyčkejte na potvrzení o uložení)</button>
+      </div>
+    </form>
+    <script src="options.js"></script>
+  </body>
+
+</html>
