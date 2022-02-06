@@ -401,7 +401,9 @@ function loadAndSetOckoUzisPatientInformation() {
                 setOckoUzisPatientDetailEditLink(PatientInfo.EditLink);
                 setOckoUzisPatientDetailLink(PatientInfo.Link);
             } else {
-                createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence);
+                createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence, false, function(form) {
+                    actionsDiv.appendChild(form);
+                });
             }
         });
     } else {
@@ -509,17 +511,17 @@ function vyhledaniPacienta(cisloZadanky) {
         }
     }, function (data) {
         if(data) {
-            var form = createVyhledaniPacientaForm(
+            createVyhledaniPacientaForm(
                 data.TestovanyJmeno,
                 data.TestovanyPrijmeni,
                 data.TestovanyDatumNarozeniText,
                 data.TestovanyNarodnostKod,
                 data.TestovanyCisloPojistence,
-                true
-            );
-
-            actionsDiv.appendChild(form);
-            form.submit();
+                true,
+                function(form) {
+                    actionsDiv.appendChild(form);
+                    form.submit();
+            });
         }
     });
 }
@@ -619,13 +621,13 @@ function createZkontrolovatZadankuForm(text, id, ZadankaData) {
     return form;
 }
 
-function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence, withoutSubmitButton) {
+function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence, withoutSubmitButton, onCreateForm) {
 
     getRegistrCUDVyhledaniPacientaUrl(function(url) {
         const detailPacientaFormId = "detail-pacienta-form";
         var form = document.getElementById(detailPacientaFormId);
         if(form) {
-            return;
+            onCreateForm(null);
         }
 
         form = document.createElement("form");
@@ -689,7 +691,7 @@ function createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrisl
             form.appendChild(submit);
         }
 
-        return form;
+        onCreateForm(form);
     });
 }
 
@@ -708,9 +710,9 @@ if(
         var DatumNarozeni = DatumNarozeniLabel.nextElementSibling.innerText;
         var StatniPrislusnost = Narodnost.value;
 
-        var form = createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence);
-
-        actionsDiv.appendChild(form);
+        createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence, false, function(form) {
+            actionsDiv.appendChild(form);
+        });
 }
 
 var JmenoLabelDetailProfilu = document.querySelector('label[for="Pacient_Jmeno"]');
