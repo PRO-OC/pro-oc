@@ -743,7 +743,7 @@ function isEregKsrzisSignedIn(callback) {
   
                     var parser = new DOMParser();
                     var responseDocument = parser.parseFromString(xhr.responseText,"text/html");
-  
+
                     if(responseDocument.title.includes("Přihlášení")) {
                         callback(false);
                     } else {
