@@ -18,6 +18,22 @@ function getEregRegistrUrl(callback) {
     });
 }
 
+function getRegistrUrl(callback) {
+    getRegistrDomain(function(registrDomain) {
+        callback("https://" + registrDomain);
+    });
+}
+
+function getRegistrDomain(callback) {
+    chrome.runtime.sendMessage({
+        "text": "GetOptionValue",
+        "name": USE_TEST_REGISTERS
+        },
+        function(useTestRegisters) {
+            callback("https://" + useTestRegisters == "true" ? "eregpublicsecure2.ksrzis.cz" : "eregpublicsecure.ksrzis.cz");
+    });
+}
+
 function getEregRegistrDomain(callback) {
     chrome.runtime.sendMessage({
         "text": "GetOptionValue",
@@ -58,7 +74,7 @@ function getRegistrCUDOvereniPage() {
     return "/Registr/CUD/Overeni";
 }
 
-function getRegistrCUDOvereniUrl() {
+function getRegistrCUDOvereniUrl(callback) {
     getRegistrUrl(function(registrUrl) {
         callback(registrUrl + getRegistrCUDOvereniPage());
     });
@@ -576,7 +592,7 @@ var Narodnost = document.getElementById("TestovanyNarodnost");
 
 function createZkontrolovatZadankuForm(text, id, ZadankaData, onCreateForm) {
 
-    getRegistrCUDOvereniPage(function(url) {
+    getRegistrCUDOvereniUrl(function(url) {
 
         var form = document.createElement("form");
         form.action = url;
