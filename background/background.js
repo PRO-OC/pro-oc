@@ -23,6 +23,38 @@ const PCR_KONFIRMACNI_SAMOPLATCE = "PCRkonfirmacniSamoplatce";
 const AG_POJISTOVNA = "AGpojistovna";
 const AG_SAMOPLATCE = "AGsamoplatce";
 
+function fixUlice(ulice) {
+    if(!ulice) {
+        return null;
+    }
+    
+    var uliceTrimmed = ulice.trim();
+    if(uliceTrimmed == "/") {
+        return uliceTrimmed;
+    }
+    
+    if(uliceTrimmed.endsWith("/")) {
+        return uliceTrimmed.slice(0, -1);
+    }
+
+    return uliceTrimmed;
+}
+  
+function fixTelefon(telefon) {
+    if (!telefon) {
+        return null;
+    }
+    var telefonTrimmed = telefon.trim();
+    if (!telefonTrimmed.startsWith('+') && telefonTrimmed.length == 9) {
+        // +420
+        return '%2B%0A420' + telefonTrimmed;
+    } else if (!telefonTrimmed.startsWith('+') && telefonTrimmed.length > 9) {
+        // + 
+        return '%2B%0A' + telefonTrimmed;
+    }
+    return telefonTrimmed;
+}
+
 function getOptionsFromLocalStorage(callback) {
     chrome.storage.local.get([CHROME_STORAGE_OPTIONS_NAMESPACE], function(data) {
         callback(data[CHROME_STORAGE_OPTIONS_NAMESPACE]);
@@ -495,10 +527,10 @@ function updateZadankaPCRpojistovna() {
             newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
             newUrlParams.set("ZdravotniPojistovnaKod", urlParams.get("ZdravotniPojistovnaKod"));
             newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-            newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
+            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
             newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
             newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-            newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
+            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
             newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
             newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
             newUrlParams.set("TypPoctTestu", "1");
@@ -518,36 +550,36 @@ function updateZadankaPCRsamoplatce() {
     getSelectedTab(function(tab) {
   
         var url = new URL(tab.url);
-  
-        isUrlRegistrZadanka(url, function(result) {
-            if(!result) {
+
+        isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
+
+            if(!isUrlRegistrZadanka) {
                 return;
-            } else {
-  
-                var urlParams = new URLSearchParams(url.search);
-  
-                var newUrlParams = new URLSearchParams;
-                newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
-                newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
-                newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
-                newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
-                newUrlParams.set("ZdravotniPojistovnaKod", "300");
-                newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-                newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
-                newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
-                newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-                newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
-                newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
-                newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
-                newUrlParams.set("TypPoctTestu", "1");
-                newUrlParams.set("SymptomZadne", "True");
-                newUrlParams.set("KlinickyZavaznyStav", "False");
-                newUrlParams.set("Indikace", "3");
-                newUrlParams.set("TypyTestu", "PCR");
-                newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
-  
-                updateZadanka(tab, newUrlParams);
             }
+  
+            var urlParams = new URLSearchParams(url.search);
+  
+            var newUrlParams = new URLSearchParams;
+            newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
+            newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
+            newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
+            newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
+            newUrlParams.set("ZdravotniPojistovnaKod", "300");
+            newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
+            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
+            newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
+            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
+            newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
+            newUrlParams.set("TypPoctTestu", "1");
+            newUrlParams.set("SymptomZadne", "True");
+            newUrlParams.set("KlinickyZavaznyStav", "False");
+            newUrlParams.set("Indikace", "3");
+            newUrlParams.set("TypyTestu", "PCR");
+            newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
+  
+            updateZadanka(tab, newUrlParams);
         });
     });
 }
@@ -557,37 +589,37 @@ function updateZadankaPCRkonfirmacniPojistovna() {
     getSelectedTab(function(tab) {
   
         var url = new URL(tab.url);
-  
-        isUrlRegistrZadanka(url, function(result) {
-            if(!result) {
+
+        isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
+
+            if(!isUrlRegistrZadanka) {
                 return;
-            } else {
-  
-                var urlParams = new URLSearchParams(url.search);
-  
-                var newUrlParams = new URLSearchParams;
-                newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
-                newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
-                newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
-                newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
-                newUrlParams.set("ZdravotniPojistovnaKod", urlParams.get("ZdravotniPojistovnaKod"));
-                newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-                newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
-                newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
-                newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-                newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
-                newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
-                newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
-                newUrlParams.set("TypPoctTestu", "1");
-                newUrlParams.set("SymptomZadne", "True");
-                newUrlParams.set("KlinickyZavaznyStav", "False");
-                newUrlParams.set("Indikace", "5");
-                newUrlParams.set("TypyTestu", "PCR");
-                newUrlParams.set("ProvedenOdber", "False");
-                newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
-  
-                updateZadanka(tab, newUrlParams);
             }
+  
+            var urlParams = new URLSearchParams(url.search);
+  
+            var newUrlParams = new URLSearchParams;
+            newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
+            newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
+            newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
+            newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
+            newUrlParams.set("ZdravotniPojistovnaKod", urlParams.get("ZdravotniPojistovnaKod"));
+            newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
+            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
+            newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
+            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
+            newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
+            newUrlParams.set("TypPoctTestu", "1");
+            newUrlParams.set("SymptomZadne", "True");
+            newUrlParams.set("KlinickyZavaznyStav", "False");
+            newUrlParams.set("Indikace", "5");
+            newUrlParams.set("TypyTestu", "PCR");
+            newUrlParams.set("ProvedenOdber", "False");
+            newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
+  
+            updateZadanka(tab, newUrlParams);
         });
     });
 }
@@ -597,37 +629,37 @@ function updateZadankaPCRkonfirmacniSamoplatce() {
     getSelectedTab(function(tab) {
   
         var url = new URL(tab.url);
-  
-        isUrlRegistrZadanka(url, function(result) {
-            if(!result) {
+
+        isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
+
+            if(!isUrlRegistrZadanka) {
                 return;
-            } else {
-  
-                var urlParams = new URLSearchParams(url.search);
-  
-                var newUrlParams = new URLSearchParams;
-                newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
-                newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
-                newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
-                newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
-                newUrlParams.set("ZdravotniPojistovnaKod", "300");
-                newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-                newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
-                newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
-                newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-                newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
-                newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
-                newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
-                newUrlParams.set("TypPoctTestu", "1");
-                newUrlParams.set("SymptomZadne", "True");
-                newUrlParams.set("KlinickyZavaznyStav", "False");
-                newUrlParams.set("Indikace", "5");
-                newUrlParams.set("TypyTestu", "PCR");
-                newUrlParams.set("ProvedenOdber", "False");
-                newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
-  
-                updateZadanka(tab, newUrlParams);
             }
+  
+            var urlParams = new URLSearchParams(url.search);
+  
+            var newUrlParams = new URLSearchParams;
+            newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
+            newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
+            newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
+            newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
+            newUrlParams.set("ZdravotniPojistovnaKod", "300");
+            newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
+            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
+            newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
+            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
+            newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
+            newUrlParams.set("TypPoctTestu", "1");
+            newUrlParams.set("SymptomZadne", "True");
+            newUrlParams.set("KlinickyZavaznyStav", "False");
+            newUrlParams.set("Indikace", "5");
+            newUrlParams.set("TypyTestu", "PCR");
+            newUrlParams.set("ProvedenOdber", "False");
+            newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
+  
+            updateZadanka(tab, newUrlParams);
         });
     });
 }
@@ -637,37 +669,37 @@ function updateZadankaAGpojistovna() {
     getSelectedTab(function(tab) {
   
         var url = new URL(tab.url);
-  
-        isUrlRegistrZadanka(url, function(result) {
-            if(!result) {
-                return;
-            } else {
-  
-                var urlParams = new URLSearchParams(url.search);
-  
-                var newUrlParams = new URLSearchParams;
-                newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
-                newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
-                newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
-                newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
-                newUrlParams.set("ZdravotniPojistovnaKod", urlParams.get("ZdravotniPojistovnaKod"));
-                newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-                newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
-                newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
-                newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-                newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
-                newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
-                newUrlParams.set("RizikovePovolaniKod", "Jine");
-                newUrlParams.set("TypPoctTestu", "1");
-                newUrlParams.set("SymptomZadne", "True");
-                newUrlParams.set("KlinickyZavaznyStav", "False");
-                newUrlParams.set("Indikace", "3");
-                newUrlParams.set("TypyTestu", "Antigen");
-                newUrlParams.set("ProvedenOdber", "False");
-                newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
 
-                updateZadanka(tab, newUrlParams);
+        isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
+
+            if(!isUrlRegistrZadanka) {
+                return;
             }
+  
+            var urlParams = new URLSearchParams(url.search);
+  
+            var newUrlParams = new URLSearchParams;
+            newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
+            newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
+            newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
+            newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
+            newUrlParams.set("ZdravotniPojistovnaKod", urlParams.get("ZdravotniPojistovnaKod"));
+            newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
+            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
+            newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
+            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
+            newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
+            newUrlParams.set("TypPoctTestu", "1");
+            newUrlParams.set("SymptomZadne", "True");
+            newUrlParams.set("KlinickyZavaznyStav", "False");
+            newUrlParams.set("Indikace", "3");
+            newUrlParams.set("TypyTestu", "Antigen");
+            newUrlParams.set("ProvedenOdber", "False");
+            newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
+
+            updateZadanka(tab, newUrlParams);
         });
     });
 }
@@ -677,37 +709,37 @@ function updateZadankaAGsamoplatce() {
     getSelectedTab(function(tab) {
       
         var url = new URL(tab.url);
-  
-        isUrlRegistrZadanka(url, function(result) {
-            if(!result) {
-                return;
-            } else {
 
-                var urlParams = new URLSearchParams(url.search);
+        isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
+
+            if(!isUrlRegistrZadanka) {
+                return;
+            }
+
+            var urlParams = new URLSearchParams(url.search);
       
-                var newUrlParams = new URLSearchParams;
-                newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
-                newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
-                newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
-                newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
-                newUrlParams.set("ZdravotniPojistovnaKod", "300");
-                newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-                newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
-                newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
-                newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-                newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
-                newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
-                newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
-                newUrlParams.set("TypPoctTestu", "1");
-                newUrlParams.set("SymptomZadne", "True");
-                newUrlParams.set("KlinickyZavaznyStav", "False");
-                newUrlParams.set("Indikace", "3");
-                newUrlParams.set("TypyTestu", "Antigen");
-                newUrlParams.set("ProvedenOdber", "False");
-                newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
+            var newUrlParams = new URLSearchParams;
+            newUrlParams.set("TestovanyJmeno", urlParams.get("TestovanyJmeno"));
+            newUrlParams.set("TestovanyPrijmeni", urlParams.get("TestovanyPrijmeni"));
+            newUrlParams.set("TestovanyCisloPojistence", urlParams.get("TestovanyCisloPojistence"));
+            newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
+            newUrlParams.set("ZdravotniPojistovnaKod", "300");
+            newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
+            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
+            newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
+            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
+            newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
+            newUrlParams.set("TypPoctTestu", "1");
+            newUrlParams.set("SymptomZadne", "True");
+            newUrlParams.set("KlinickyZavaznyStav", "False");
+            newUrlParams.set("Indikace", "3");
+            newUrlParams.set("TypyTestu", "Antigen");
+            newUrlParams.set("ProvedenOdber", "False");
+            newUrlParams.set("OrdinaceVystavil", urlParams.get("OrdinaceVystavil"));
   
-                updateZadanka(tab, newUrlParams);
-             }
+            updateZadanka(tab, newUrlParams);
         });
     });
 }
@@ -794,7 +826,7 @@ function setUrlParamsPosledniZadankyToUrlParams(urlParams, data) {
     }
   
     if(!urlParams.has("TestovanyUlice") && data.TestovanyUlice) {
-        urlParams.set("TestovanyUlice", data.TestovanyUlice);
+        urlParams.set("TestovanyUlice", fixUlice(data.TestovanyUlice));
     }
   
     if(!urlParams.has("TestovanyMesto") && data.TestovanyMesto) {
