@@ -1,6 +1,6 @@
 # PRO OC
 
-[Rozšíření do Mozilla Firefox](https://addons.mozilla.org/addon/pro-oc/)
+[Rozšíření do Mozilla Firefox](https://addons.mozilla.org/addon/pro-oc/), [Doplněk do Microsoft Edge](https://microsoftedge.microsoft.com/addons/detail/pro-oc/cdgmeeomaokdpefkcgnlibnlnggombjf?hl=cs-CZ)
 
 ![Preview](preview/nahled.PNG)
 
