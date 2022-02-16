@@ -102,7 +102,7 @@ function getRegistrCUDZadankyPacientDetailSloucitPacientyUrl(callback) {
     });
 }
 
-function getRegistrZadankyDomain() {
+function getRegistrZadankyDomain(callback) {
     chrome.runtime.sendMessage({
         "text": "GetOptionValue",
         "name": USE_TEST_REGISTERS
