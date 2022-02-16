@@ -154,8 +154,8 @@ function redirectToPacientiCovid19() {
                 getEregRegistrCUDzadankyZadankaUrl(function(pacientiCovid19ZadankaUrl) {
                     var newUrl = pacientiCovid19ZadankaUrl + url.search;
                     chrome.tabs.update({url: newUrl});
-                });         
-            }       
+                });
+            }
         });
     });
 }
@@ -185,10 +185,10 @@ function getRegistrCUDVyhledaniPacientaUrlParams(zadanka) {
     urlParams.set("Jmeno", zadanka.Jmeno);
     urlParams.set("Prijmeni", zadanka.Prijmeni);
     if(zadanka.StatniPrislusnost == "CZ") {
-      urlParams.set("RodneCislo", zadanka.CisloPojistence);
+        urlParams.set("RodneCislo", zadanka.CisloPojistence);
     } else {
-      urlParams.set("DatumNarozeni", zadanka.DatumNarozeni);
-      urlParams.set("ZemeKod", zadanka.StatniPrislusnost);
+        urlParams.set("DatumNarozeni", zadanka.DatumNarozeni);
+        urlParams.set("ZemeKod", zadanka.StatniPrislusnost);
     }
     urlParams.set("_submit", "None");
     return urlParams;
@@ -202,80 +202,78 @@ function getRegistrCUDZadankyMojeZadankyStornoUrl(CisloZadanky, callback) {
 
 function unsetProvedenOdber(Cislo, callback) {
     getRegistrCUDZadankyMojeZadankyEditaceUrl(Cislo, function(url) {
+
         var urlParams = getRegistrCUDZadankyMojeZadankyEditaceUrlParams(false);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
+        fetch(url, {
+            method: 'post',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+            },
+            body: urlParams.toString()
+        })
+        .then(function (response) {
+            if(response.status == 200) {
                 callback(true);
+            } else {
+                return;
             }
-        }
-        xhr.send(urlParams.toString());
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     });
 }
-  
+
 function stornoZadanka(Cislo, callback) {
     getRegistrCUDZadankyMojeZadankyStornoUrl(Cislo, function(url) {
-  
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
+
+        fetch(url, {
+            method: 'post',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+            },
+            body: urlParams.toString()
+        })
+        .then(function (response) {
+            if(response.status == 200) {
                 callback(true);
+            } else {
+                return;
             }
-        }
-        xhr.send();
+        })
+        .catch(function (error) {
+              console.log(error);
+        });
     });
 }
-  
-  
-function loadOckoUzisPatientInfo(zadanka, callback) {
+
+function getPatientDetail(zadanka, callback) {
     getRegistrCUDVyhledaniPacientaUrl(function(url) {
         var urlParams = getRegistrCUDVyhledaniPacientaUrlParams(zadanka);
-  
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
-  
-                var parser = new DOMParser();
-                var responseDocument = parser.parseFromString(xhr.responseText,"text/html");
-  
 
-                var results = {};
-
-                var results = {
-                    Telefon: undefined,
-                    Email: undefined,
-                    Cislo: undefined
-                };
-            
-                var labels = responseDocument.getElementsByTagName('label');
-                for (var i = 0; i < labels.length; i++) {
-                switch(labels[i].htmlFor) {
-                    case 'Pacient_Telefon':
-                        results.Telefon = labels[i].nextElementSibling.innerText.trim();
-                        break;
-                    case 'Pacient_Email':
-                        results.Email = labels[i].nextElementSibling.innerText.trim();
-                        break;
-                    case 'Pacient_CisloPacienta':
-                        results.Cislo = labels[i].nextElementSibling.innerText.trim();
-                        break;
-                    }
-                }
-
-                results.Link = xhr.responseURL;
-                results.EditLink = xhr.responseURL.replace("Index", "Edit");
-  
-                callback(results);
+        fetch(url, {
+            method: 'post',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+            },
+            body: urlParams.toString()
+        })
+        .then(function(response) {
+            if (response.status == 200) {
+                response.text().then(function(text) {
+                    callback({
+                        'url': response.url,
+                        'text': text
+                    });
+                });
+            } else {
+                return;
             }
-        }
-        xhr.send(urlParams.toString());
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     });
 }
 
@@ -340,18 +338,24 @@ function getZadankaData(zadankaData, callback) {
 
             var urlParams = getRegistrCUDOvereniCisloZadankyUrlParams(kodOsoby, heslo, zadankaData);
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", url + "?" + urlParams.toString(), true);
-            xhr.setRequestHeader("Content-Type","application/json; charset=UTF-8");
-            xhr.onreadystatechange = function() {
-                if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-
-                    var data = JSON.parse(xhr.responseText);
-
-                    callback(data);
+            fetch(url + "?" + urlParams.toString(), {
+                method: 'get',
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
                 }
-            };
-            xhr.send();
+            })
+            .then(function (response) {
+                if(response.status == 200) {
+                    response.json().then(function(json) {
+                        callback(json);
+                    });
+                } else {
+                    return;
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
         });
     });
 }
@@ -366,24 +370,32 @@ function getRegistrCUDZadankyPacientDetailEditUrlParams(Telefon, Email) {
 
 function setOckoUzisTelefonEmail(OckoUzisEditLink, Telefon, Email, callback) {
     var url = OckoUzisEditLink;
-  
+
     var urlParams = getRegistrCUDZadankyPacientDetailEditUrlParams(Telefon, Email);
-  
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.onreadystatechange = function() {
-      if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {                                
-        callback();
-      }
-    }
-    xhr.send(urlParams.toString());
+
+    fetch(url, {
+        method: 'post',
+        headers: {
+            "Content-type": "text/xml"
+        },
+        body: urlParams.toString()
+    })
+    .then(function (response) {
+        if(response.status == 200) {
+            callback();
+        } else {
+            return;
+        }
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
 }
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if (msg.text === 'OckoUzisPatientInfo') {
-        loadOckoUzisPatientInfo(msg.data, Credentials => {
-            sendResponse(Credentials);
+    if (msg.text === 'GetPatientDetail') {
+        getPatientDetail(msg.data, response => {
+            sendResponse(response);
         });
         return true;
     } else if(msg.text === 'ZrusitProvedenOdber' && msg.data.Cislo) {
@@ -762,31 +774,27 @@ function cleanUrlParams(urlParams) {
     return urlParams;
 }
 
+function getEregRegistrDefaultPageUrl(callback) {
+    getEregRegistrUrl(function(eregRegistrUrl) {
+        callback(eregRegistrUrl + "/JTP/cms/Stranky/default.aspx");
+    });
+}
 
 function isEregKsrzisSignedIn(callback) {
-    getEregRegistrUrl(function(url) {
-  
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.onreadystatechange = function() {
-            if(xhr.readyState === XMLHttpRequest.DONE) {
-  
-                if(xhr.status == 200) {
-  
-                    var parser = new DOMParser();
-                    var responseDocument = parser.parseFromString(xhr.responseText,"text/html");
-
-                    if(responseDocument.title.includes("Přihlášení")) {
-                        callback(false);
-                    } else {
-                        callback(true);
-                    }
-                } else {
-                    callback(false);
-                }
-            }
-        }
-        xhr.send();
+    getEregRegistrDefaultPageUrl(function(url) {
+        fetch(url, {
+            method: 'get'
+        })
+        .then(function (response) {
+            if(response.status == 200) {
+                callback(true);
+            } else {
+				callback(false);
+			}
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     });
 }
 
@@ -842,76 +850,81 @@ function setUrlParamsPosledniZadankyToUrlParams(urlParams, data) {
 
 function getUrlParamsPosledniZadanky(cisloPojistence, callback) {
     var resultUrlParams = new URLSearchParams();
-  
+
     if(!cisloPojistence) {
         callback(resultUrlParams);
         return;
     }
-  
+
     getRegistrLoginCookies(function(cookieParams) {
-  
+
         var kodOsoby = cookieParams.get("kodOsoby");
         var heslo = cookieParams.get("heslo");
-  
+
         if(!kodOsoby || !heslo) {
             callback(resultUrlParams);
         } else {
-  
+
             getRegistrCUDOvereniCisloZadankyUrl(function(url) {
 
                 var urlParams = getRegistrCUDOvereniCisloPojistenceUrlParams(kodOsoby, heslo, cisloPojistence);
-                var link = url + "?" + urlParams.toString();
-  
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", link, true);
-                xhr.setRequestHeader("Content-Type","application/json; charset=UTF-8");
-                xhr.onreadystatechange = function() {
-                    if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
-  
-                        var data = JSON.parse(xhr.responseText);
-  
-                        resultUrlParams = setUrlParamsPosledniZadankyToUrlParams(resultUrlParams, data);
-  
-                        if(
-                            resultUrlParams.has("RizikovePovolaniKod") &&
-                            resultUrlParams.has("TestovanyUlice") &&
-                            resultUrlParams.has("TestovanyMesto") &&
-                            resultUrlParams.has("TestovanyPSC")
-                        ) {
-                            callback(resultUrlParams);
-                            return;
-                        } else if (data.Vysledek == "ExistujeViceZadanekProDaneRC") {
-  
-                            var posledniZadanka = data.ExistujiciZadanky[data.ExistujiciZadanky.length - 1];
 
-                            getRegistrCUDOvereniCisloZadankyUrl(function(url) {
-  
-                                var urlParams = getRegistrCUDOvereniCisloZadankyUrlParams(kodOsoby, heslo, posledniZadanka.Cislo);
-                                var link = url + "?" + urlParams.toString();
-  
-                                var xhrPosledniZadanka = new XMLHttpRequest();
-                                xhrPosledniZadanka.open("GET", link, true);
-                                xhrPosledniZadanka.setRequestHeader("Content-Type","application/json; charset=UTF-8");
-                                xhrPosledniZadanka.onreadystatechange = function() {
-                                    if(xhrPosledniZadanka.readyState === XMLHttpRequest.DONE && xhrPosledniZadanka.status == 200) {
-  
-                                        var data = JSON.parse(xhrPosledniZadanka.responseText);
-  
-                                        resultUrlParams = setUrlParamsPosledniZadankyToUrlParams(resultUrlParams, data);
-  
-                                        callback(resultUrlParams);
-                                        return;
-                                    }
-                                }
-                                xhrPosledniZadanka.send();
-                            });
-                        } else {
-                            callback(resultUrlParams);
-                            return;
-                        }
+                fetch(url + "?" + urlParams.toString(), {
+                    method: 'get',
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
                     }
-                }
-                xhr.send();
+                })
+                .then(function (response) {
+                    if(response.status == 200) {
+                        response.json().then(function(json) {
+
+                            resultUrlParams = setUrlParamsPosledniZadankyToUrlParams(resultUrlParams, json);
+
+                            if(
+                                resultUrlParams.has("RizikovePovolaniKod") &&
+                                resultUrlParams.has("TestovanyUlice") &&
+                                resultUrlParams.has("TestovanyMesto") &&
+                                resultUrlParams.has("TestovanyPSC")
+                            ) {
+                                callback(resultUrlParams);
+                            } else if (data.Vysledek == "ExistujeViceZadanekProDaneRC") {
+
+                                var posledniZadanka = data.ExistujiciZadanky[data.ExistujiciZadanky.length - 1];
+
+                                getRegistrCUDOvereniCisloZadankyUrl(function(url) {
+  
+                                    var urlParams = getRegistrCUDOvereniCisloZadankyUrlParams(kodOsoby, heslo, posledniZadanka.Cislo);
+
+                                    fetch(url + "?" + urlParams.toString(), {
+                                        method: 'get',
+                                        headers: {
+                                            "Content-type": "application/json; charset=UTF-8"
+                                        }
+                                    })
+                                    .then(function (response) {
+                                        if(response.status == 200) {
+                                            response.json().then(function(json) {
+                                                resultUrlParams = setUrlParamsPosledniZadankyToUrlParams(resultUrlParams, json);
+                                                callback(resultUrlParams);
+                                            });
+                                        }
+                                    })
+                                    .catch(function (error) {
+                                        console.log(error);
+                                    });
+                                });
+                            } else {
+                                callback(resultUrlParams);
+                            }
+                        });
+                    } else {
+                        return;
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             });
         }
     });
@@ -972,9 +985,9 @@ function updateZadanka(tab, params) {
             if (IsDisabledPopupAboutParamsFromPosledniZadanka == "false") {
 
                 getUrlParamsPosledniZadanky(params.get("TestovanyCisloPojistence"), (urlParamsPosledniZadanky) => {
-  
+
                     urlParamsPosledniZadanky = cleanUrlParams(urlParamsPosledniZadanky);
-  
+
                     urlParamsPosledniZadankyText = urlParamsPosledniZadanky.get("RizikovePovolaniText");
 
                     if(
@@ -985,9 +998,9 @@ function updateZadanka(tab, params) {
                         urlParamsPosledniZadankyText != null
                     ) {
                         chrome.tabs.sendMessage(tab.id, {text: 'RizikovePovolaniText', value: urlParamsPosledniZadankyText}, function(rizikovePovolaniKod) {
-  
+
                             if(rizikovePovolaniKod != params.get("RizikovePovolaniKod")) {
-  
+
                                 var confirmRizikovePovolani = window.confirm("Použít Rizikové povolání - kolektiv: " + urlParamsPosledniZadankyText + "? (poslední žádanka)");
                                 if (confirmRizikovePovolani == true) {
                                     params.set("RizikovePovolaniKod", rizikovePovolaniKod);
@@ -995,12 +1008,12 @@ function updateZadanka(tab, params) {
                             }
                         });
                     }
-  
+
                     isEregKsrzisSignedIn(function(isSignedIn) {
 
                         var oldUrl = new URL(tab.url);
                         var newUrl = oldUrl.origin + oldUrl.pathname;
-  
+
                         var IsDisabledRedirectToPacientiCovid19 = options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
 
                         if(isSignedIn && IsDisabledRedirectToPacientiCovid19 == "false") {

@@ -394,6 +394,39 @@ function loadAndShowOckoUzisLastPatientActiveRequestIfExists() {
         }
 }
 
+function getPatientInfoFromPatientDetail(url, text) {
+    var parser = new DOMParser();
+    var responseDocument = parser.parseFromString(text,"text/html");
+
+    var results = {};
+
+    var results = {
+        Telefon: undefined,
+        Email: undefined,
+        Cislo: undefined
+    };
+
+    var labels = responseDocument.getElementsByTagName('label');
+    for (var i = 0; i < labels.length; i++) {
+    switch(labels[i].htmlFor) {
+        case 'Pacient_Telefon':
+            results.Telefon = labels[i].nextElementSibling.innerText.trim();
+            break;
+        case 'Pacient_Email':
+            results.Email = labels[i].nextElementSibling.innerText.trim();
+            break;
+        case 'Pacient_CisloPacienta':
+            results.Cislo = labels[i].nextElementSibling.innerText.trim();
+            break;
+        }
+    }
+
+    results.Link = url;
+    results.EditLink = url.replace("Index", "Edit");
+
+    return results;
+}
+
 function loadAndSetOckoUzisPatientInformation() {
     if(
         TestovanyJmenoElement && TestovanyJmenoElement.value && 
@@ -411,14 +444,15 @@ function loadAndSetOckoUzisPatientInformation() {
         var DatumNarozeni = TestovanyDatumNarozeniElement.value;
  
         chrome.runtime.sendMessage({
-            "text": "OckoUzisPatientInfo",
+            "text": "GetPatientDetail",
             "data": {
                 "Jmeno": Jmeno,
                 "Prijmeni": Prijmeni,
                 "StatniPrislusnost": StatniPrislusnost,
                 "CisloPojistence": CisloPojistence
             }
-        }, function(PatientInfo) {
+        }, function(response) {
+            var PatientInfo = getPatientInfoFromPatientDetail(response.url, response.text);
 
             const detailPacientaFormId = "detail-pacienta-form";
 
@@ -896,14 +930,16 @@ if(
         const Email = ZadankaData.TestovanyEmail;
 
         chrome.runtime.sendMessage({
-            "text": "OckoUzisPatientInfo",
+            "text": "GetPatientDetail",
             "data": {
                 "Jmeno": Jmeno,
                 "Prijmeni": Prijmeni,
                 "StatniPrislusnost": StatniPrislusnost,
                 "CisloPojistence": CisloPojistence
             }
-        }, function(PatientInfo) {
+        }, function(response) {
+            var PatientInfo = getPatientInfoFromPatientDetail(response.url, response.text);
+
             if(PatientInfo && PatientInfo.Cislo) {
                 var tableElement = document.createElement("table");
                 tableElement.setAttribute("class", "zadanka");
@@ -977,7 +1013,7 @@ if(
                     });
                 }, false);
 
-                buttonTd.appendChild(setOckoUzisTelefonEmailDivElement);
+                uttonTd.appendChild(setOckoUzisTelefonEmailDivElement);
 
                 trUlozitNaProfil.appendChild(document.createElement("td"));
                 trUlozitNaProfil.appendChild(buttonTd);
