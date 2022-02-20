@@ -908,7 +908,8 @@ const printDiv = document.getElementById("printDiv");
 
 if(
     printDiv &&
-    KontaktniUdajeElement
+    KontaktniUdajeElement &&
+    CisloElement && CisloElement.value
 ) {
 
     chrome.runtime.sendMessage({
