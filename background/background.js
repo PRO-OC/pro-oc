@@ -888,7 +888,7 @@ function getUrlParamsPosledniZadanky(cisloPojistence, callback) {
                                 resultUrlParams.has("TestovanyPSC")
                             ) {
                                 callback(resultUrlParams);
-                            } else if (data.Vysledek == "ExistujeViceZadanekProDaneRC") {
+                            } else if (json.Vysledek == "ExistujeViceZadanekProDaneRC") {
 
                                 var posledniZadanka = data.ExistujiciZadanky[data.ExistujiciZadanky.length - 1];
 
