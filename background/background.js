@@ -539,10 +539,10 @@ function updateZadankaPCRpojistovna() {
             newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
             newUrlParams.set("ZdravotniPojistovnaKod", urlParams.get("ZdravotniPojistovnaKod"));
             newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
             newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
             newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
             newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
             newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
             newUrlParams.set("TypPoctTestu", "1");
@@ -578,10 +578,10 @@ function updateZadankaPCRsamoplatce() {
             newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
             newUrlParams.set("ZdravotniPojistovnaKod", "300");
             newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
             newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
             newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
             newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
             newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
             newUrlParams.set("TypPoctTestu", "1");
@@ -617,10 +617,10 @@ function updateZadankaPCRkonfirmacniPojistovna() {
             newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
             newUrlParams.set("ZdravotniPojistovnaKod", urlParams.get("ZdravotniPojistovnaKod"));
             newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
             newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
             newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
             newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
             newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
             newUrlParams.set("TypPoctTestu", "1");
@@ -657,10 +657,10 @@ function updateZadankaPCRkonfirmacniSamoplatce() {
             newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
             newUrlParams.set("ZdravotniPojistovnaKod", "300");
             newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
             newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
             newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
             newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
             newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
             newUrlParams.set("TypPoctTestu", "1");
@@ -697,10 +697,10 @@ function updateZadankaAGpojistovna() {
             newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
             newUrlParams.set("ZdravotniPojistovnaKod", urlParams.get("ZdravotniPojistovnaKod"));
             newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
             newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
             newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
             newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
             newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
             newUrlParams.set("TypPoctTestu", "1");
@@ -737,10 +737,10 @@ function updateZadankaAGsamoplatce() {
             newUrlParams.set("TestovanyNarodnost", urlParams.get("TestovanyNarodnost"));
             newUrlParams.set("ZdravotniPojistovnaKod", "300");
             newUrlParams.set("TestovanyDatumNarozeni", urlParams.get("TestovanyDatumNarozeni"));
-            newUrlParams.set("TestovanyUlice", fixUlice(urlParams.get("TestovanyUlice")));
+            newUrlParams.set("TestovanyUlice", urlParams.get("TestovanyUlice"));
             newUrlParams.set("TestovanyMesto", urlParams.get("TestovanyMesto"));
             newUrlParams.set("TestovanyPSC", urlParams.get("TestovanyPSC"));
-            newUrlParams.set("TestovanyTelefon", fixTelefon(urlParams.get("TestovanyTelefon")));
+            newUrlParams.set("TestovanyTelefon", urlParams.get("TestovanyTelefon"));
             newUrlParams.set("TestovanyEmail", urlParams.get("TestovanyEmail"));
             newUrlParams.set("RizikovePovolaniKod", urlParams.get("RizikovePovolaniKod") ? urlParams.get("RizikovePovolaniKod") : "Jine");
             newUrlParams.set("TypPoctTestu", "1");
@@ -930,9 +930,37 @@ function getUrlParamsPosledniZadanky(cisloPojistence, callback) {
     });
 }
 
+function getDateDDdotMMdotYYYY(date) {
+    var day = date.substr(0, date.indexOf('.'));
+    var month = date.substr(date.indexOf('.') + 1, date.lastIndexOf('.') - date.indexOf('.') - 1) - 1;
+    var year = date.substr(date.lastIndexOf('.') + 1, date.length + 1);
+    var dateObj = new Date(year, month, day);
+  
+    if (isNaN(dateObj.getTime())) {
+      dateObj = new Date(date);
+    }
+    
+    return dateObj.getDate() + "." + (dateObj.getMonth() + 1) + "." + dateObj.getFullYear();
+}
+
+function fixParams(params) {
+    if(params.get("TestovanyDatumNarozeni")) {
+        params.set("TestovanyDatumNarozeni", getDateDDdotMMdotYYYY(params.get("TestovanyDatumNarozeni")));
+    }
+    if(params.get("TestovanyUlice")) {
+        params.set("TestovanyUlice", fixUlice(params.get("TestovanyUlice")));
+    }
+    if(params.get("TestovanyTelefon")) {
+        params.set("TestovanyTelefon", fixTelefon(params.get("TestovanyTelefon")));
+    }
+    return params;
+}
+
 function updateZadanka(tab, params) {
 
     params = cleanUrlParams(params);
+
+    params = fixParams(params);
 
     getRegistrLoginCookies(cookieParams => {
         if(cookieParams.get("jmeno") || cookieParams.get("prijmeni")) {
