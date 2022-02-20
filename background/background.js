@@ -51,6 +51,8 @@ function fixTelefon(telefon) {
     } else if (!telefonTrimmed.startsWith('+') && telefonTrimmed.length > 9) {
         // + 
         return '%2B%0A' + telefonTrimmed;
+    } else if (telefonTrimmed.startsWith('420') && telefonTrimmed.length == 12) {
+        return '%2B%0A' + telefonTrimmed;
     }
     return telefonTrimmed;
 }
