@@ -975,8 +975,9 @@ function updateZadanka(tab, params) {
             var TypyTestu = params.get("TypyTestu");
 
             var options = new URLSearchParams(optionsURLSearchParams);
-  
+
             var AGVyrobceTestuKod = options.get(AG_VYROBCE_TESTU_KOD);
+
             if(AGVyrobceTestuKod && TypyTestu == "Antigen") {
                 params.set("VyrobceTestuKod", AGVyrobceTestuKod);
             }

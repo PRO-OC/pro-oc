@@ -163,7 +163,7 @@ if(zadankaForm) {
       zadankaFormData.get(ORDINACE_TELEFON),
       zadankaFormData.get(ORDINACE_ICP_AG),
       zadankaFormData.get(ORDINACE_ICP_PCR),
-      zadankaFormData.get(AG_VYROBCE_TESTU_KOD),
+      zadankaFormData.get(AG_VYROBCE_TESTU_KOD) ? zadankaFormData.get(AG_VYROBCE_TESTU_KOD) : "",
       zadankaFormData.get(AG_VYROBCE_LIST_URL),
       UseTestRegisters ? UseTestRegisters.checked : false,
       IsDisabledRedirectToPacientiCovid19 ? IsDisabledRedirectToPacientiCovid19.checked : false,
