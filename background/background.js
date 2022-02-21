@@ -1,5 +1,5 @@
 // duplicated in popup.js, background.js, options.js (like inferface)
-const CHROME_STORAGE_OPTIONS_NAMESPACE = "vfn-oc-extension-options";
+const CHROME_STORAGE_OPTIONS_NAMESPACE = "pro-oc-options";
 
 const ODBERNE_MISTO_KOD = "OdberneMistoKod";
 const ORDINACE_EMAIL = "OrdinaceEmail";
