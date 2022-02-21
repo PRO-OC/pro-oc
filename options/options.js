@@ -13,6 +13,7 @@ const USE_TEST_REGISTERS = "UseTestRegisters";
 const IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19 = "IsDisabledRedirectToPacientiCovid19";
 const IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA = "IsDisabledPopupAboutParamsFromPosledniZadanka";
 const AG_VYROBCE_LIST_URL = "AGVyrobceListUrl";
+const SUBMIT_RESULT = "SubmitResult";
 
 function setOptionsToLocalStorage(options) {
   chrome.storage.local.set({[CHROME_STORAGE_OPTIONS_NAMESPACE] : options});
@@ -132,9 +133,18 @@ function saveOptions(
     }
 
     setOptionsToLocalStorage(options.toString());
-  
-    chrome.extension.getBackgroundPage().alert("Uloženo");
+
+    setSubmitResult("Uloženo v " + new Date().toString());
   });
+}
+
+function clearSubmitResult() {
+  setSubmitResult("");
+}
+
+function setSubmitResult(text) {
+  var result = document.getElementById(SUBMIT_RESULT);
+  result.innerHTML = text;
 }
 
 function getOptions(callback) {
@@ -149,6 +159,8 @@ if(zadankaForm) {
   zadankaForm.addEventListener("submit", function(event) {
 
     event.preventDefault();
+
+    clearSubmitResult();
 
     var zadankaFormData = new FormData(zadankaForm);
 
