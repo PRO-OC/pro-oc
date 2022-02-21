@@ -74,11 +74,6 @@ function getAGVyrobceTestuList(callback) {
   });
 }
 
-function setUseTestRegisters(UseTestRegisters) {
-  var UseTestRegistersElement = document.getElementById("UseTestRegisters");
-  UseTestRegistersElement.checked = UseTestRegisters;
-}
-
 function setOptionChekboxInputValueToElement(elementValue, elementName) {
   var Element = document.getElementById(elementName);
   if(Element) {
