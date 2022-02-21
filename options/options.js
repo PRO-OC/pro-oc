@@ -14,6 +14,7 @@ const IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19 = "IsDisabledRedirectToPacientiC
 const IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA = "IsDisabledPopupAboutParamsFromPosledniZadanka";
 const AG_VYROBCE_LIST_URL = "AGVyrobceListUrl";
 const SUBMIT_RESULT = "SubmitResult";
+const RELOAD_RESULT = "ReloadResult";
 
 function setOptionsToLocalStorage(options) {
   chrome.storage.local.set({[CHROME_STORAGE_OPTIONS_NAMESPACE] : options});
@@ -150,24 +151,24 @@ function saveOptions(
       setOptionsToLocalStorage(options.toString());
 
       if(givenUrlWorks) {
-        setSubmitResult("Uloženo v " + new Date().toString() + ". List výrobců se ze zadané URL načíst podařilo.");
+        setResult(SUBMIT_RESULT, "Uloženo v " + new Date().toString() + ". List výrobců se ze zadané URL načíst podařilo.");
       } else {
-        setSubmitResult("Uloženo v " + new Date().toString() + ". List výrobců se ze zadané URL načíst nepodařilo.");
+        setResult(SUBMIT_RESULT, "Uloženo v " + new Date().toString() + ". List výrobců se ze zadané URL načíst nepodařilo.");
       }
     });
   } else {
     setOptionsToLocalStorage(options.toString());
 
-    setSubmitResult("Uloženo v " + new Date().toString());
+    setResult(SUBMIT_RESULT, "Uloženo v " + new Date().toString());
   }
 }
 
-function clearSubmitResult() {
-  setSubmitResult("");
+function clearResult(elementId) {
+  setResult(elementId, "");
 }
 
-function setSubmitResult(text) {
-  var result = document.getElementById(SUBMIT_RESULT);
+function setResult(elementId, text) {
+  var result = document.getElementById(elementId);
   result.innerHTML = text;
 }
 
@@ -184,7 +185,7 @@ if(zadankaForm) {
 
     event.preventDefault();
 
-    clearSubmitResult();
+    clearResult(SUBMIT_RESULT);
 
     var zadankaFormData = new FormData(zadankaForm);
 
@@ -209,8 +210,39 @@ if(zadankaForm) {
   });
 }
 
+const AGVyrobceTestuKodReloadButton = document.getElementById("AGVyrobceTestuKodReload");
+
+AGVyrobceTestuKodReloadButton.addEventListener("click", function(event) {
+
+    event.preventDefault();
+
+    clearResult(RELOAD_RESULT);
+
+    getOptions(function(options) {
+      getAGVyrobceTestuList(function (givenUrlWorks, AGVyrobceTestuList) {
+        setAGVyrobceTestuList(AGVyrobceTestuList, options.get(AG_VYROBCE_TESTU_KOD));
+        var AGVyrobceListUrl = options.get(AG_VYROBCE_LIST_URL);
+        addMessageWhenAGVyrobceTestuListWasLoaded(AGVyrobceListUrl, givenUrlWorks);
+      });
+    });
+});
+
+function addMessageWhenAGVyrobceTestuListWasLoaded(AGVyrobceListUrl, givenUrlWorks) {
+  if(AGVyrobceListUrl) {
+    if(givenUrlWorks) {
+      setResult(RELOAD_RESULT, "Načteno v " + new Date().toString() + ". List výrobců se ze zadané URL načíst podařilo.");
+    } else {
+      setResult(RELOAD_RESULT, "Načteno v " + new Date().toString() + ". List výrobců se ze zadané URL načíst nepodařilo.");
+    }
+  } else {
+    setResult(RELOAD_RESULT, "Načteno v " + new Date().toString() + ". List výrobců nebyl URL adresou přenastavený, proto se použil defaultní.");
+  }
+}
+
 window.onload = function() {
   getOptions(function(options) {
+    var AGVyrobceListUrl = options.get(AG_VYROBCE_LIST_URL);
+
     setOptionTextInputValueToElement(options.get(ODBERNE_MISTO_KOD), ODBERNE_MISTO_KOD);
     setOptionTextInputValueToElement(options.get(ORDINACE_EMAIL), ORDINACE_EMAIL);
     setOptionTextInputValueToElement(options.get(ORDINACE_TELEFON), ORDINACE_TELEFON);
@@ -222,7 +254,8 @@ window.onload = function() {
     setOptionChekboxInputValueToElement(options.get(IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA) == "true" ? true : false, IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA);
     getAGVyrobceTestuList(function (givenUrlWorks, AGVyrobceTestuList) {
       setAGVyrobceTestuList(AGVyrobceTestuList, options.get(AG_VYROBCE_TESTU_KOD));
+      addMessageWhenAGVyrobceTestuListWasLoaded(AGVyrobceListUrl, givenUrlWorks);
     });
-    setOptionTextInputValueToElement(options.get(AG_VYROBCE_LIST_URL), AG_VYROBCE_LIST_URL);
+    setOptionTextInputValueToElement(AGVyrobceListUrl, AG_VYROBCE_LIST_URL);
   });
 };

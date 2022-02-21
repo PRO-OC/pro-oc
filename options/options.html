@@ -23,8 +23,14 @@
       <input type="text" name="OrdinaceICPPCR" id="OrdinaceICPPCR">
       <label name="PCRProvedenOdber">Předvyplněný proveden odběr u PCR</label>
       <input type="checkbox" name="PCRProvedenOdber" id="PCRProvedenOdber">
-      <label name="AGVyrobceTestuKod">Výrobce u AG (vyčkejte než se načte)</label>
+      <label name="AGVyrobceTestuKod">Výrobce u AG (po otevření nastavení vyčkejte na potvrzení o načtení zobrazené pod tlačítkem Přenačíst)</label>
       <select name="AGVyrobceTestuKod" id="AGVyrobceTestuKod"></select>
+      <div class="submit">
+        <button type="button" id="AGVyrobceTestuKodReload">Přenačíst (po zadání nové url adresy všech výrobců AG testů)</button>
+      </div>
+      <div id="ReloadResult">
+
+      </div>
       <br>
       <br>
       <label style="font-weight: bold;">Obecná nastavení:</label>
