@@ -788,14 +788,15 @@ function isEregKsrzisSignedIn(callback) {
             method: 'get'
         })
         .then(function (response) {
-            if(response.status == 200) {
-                callback(true);
+            if(response.status == 200 && response.redirected) {
+                callback(false);
             } else {
-				callback(false);
+				callback(true);
 			}
         })
         .catch(function (error) {
             console.log(error);
+            callback(false);
         });
     });
 }
