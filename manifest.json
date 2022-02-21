@@ -53,6 +53,7 @@
     "tabs",
     "cookies",
     "commands",
-    "storage"
+    "storage",
+    "activeTab"
   ]
 }

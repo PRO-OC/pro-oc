@@ -23,6 +23,9 @@ const PCR_KONFIRMACNI_SAMOPLATCE = "PCRkonfirmacniSamoplatce";
 const AG_POJISTOVNA = "AGpojistovna";
 const AG_SAMOPLATCE = "AGsamoplatce";
 
+const CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI = "ConfirmPosledniZadankaRizikovePovolani";
+const CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU = "ConfirmPosledniZadankaUdajeOPobytu";
+
 function fixUlice(ulice) {
     if(!ulice) {
         return null;
@@ -959,6 +962,124 @@ function fixParams(params) {
     return params;
 }
 
+function setOptionValuesToParams(params, options) {
+
+    var TypyTestu = params.get("TypyTestu");
+
+    var AGVyrobceTestuKod = options.get(AG_VYROBCE_TESTU_KOD);
+    if(AGVyrobceTestuKod && TypyTestu == "Antigen") {
+        params.set("VyrobceTestuKod", AGVyrobceTestuKod);
+    }
+
+    var OrdinaceICPAG = options.get(ORDINACE_ICP_AG);
+    if(OrdinaceICPAG && TypyTestu == "Antigen") {
+        params.set("OrdinaceICP", OrdinaceICPAG);
+    }
+
+    var OrdinaceICPPCR = options.get(ORDINACE_ICP_PCR);
+    if(OrdinaceICPPCR && TypyTestu == "PCR") {
+        params.set("OrdinaceICP", OrdinaceICPPCR);
+    }
+
+    var PCRProvedenOdber = options.get(PCR_PROVEDEN_ODBER);
+    if(PCRProvedenOdber == "true" && TypyTestu == "PCR") {
+        params.set("ProvedenOdber", PCRProvedenOdber);
+    }
+
+    var OdberneMistoKod = options.get(ODBERNE_MISTO_KOD);
+    if(OdberneMistoKod) {
+        params.set("OdberneMistoKod", OdberneMistoKod);
+    }
+
+    var OrdinaceEmail = options.get(ORDINACE_EMAIL);
+    if(OrdinaceEmail) {
+        params.set("OrdinaceEmail", OrdinaceEmail);
+    }
+
+    var OrdinaceTelefon = options.get(ORDINACE_TELEFON);
+    if(OrdinaceTelefon) {
+        params.set("OrdinaceTelefon", OrdinaceTelefon);
+    }
+
+    return params;
+}
+
+function updateZadankaConfirmWindowsAboutParamsFromPosledniZadankaRizikovePovolaniKod(tab, urlParamsPosledniZadanky, params, callback) {
+    var urlParamsPosledniZadankyRizikovePovolaniText = urlParamsPosledniZadanky.get("RizikovePovolaniText");
+    if(
+        params.get("RizikovePovolaniKod") == "Jine" &&
+        urlParamsPosledniZadankyRizikovePovolaniText &&
+        urlParamsPosledniZadankyRizikovePovolaniText != "Jine"
+    ) {
+        chrome.tabs.sendMessage(tab.id,
+            {
+                text: CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI, 
+                data: {
+                    RizikovePovolaniTextPosledniZadanka: urlParamsPosledniZadankyRizikovePovolaniText, 
+                    RizikovePovolaniKod: params.get("RizikovePovolaniKod")} 
+            }, function(confirmedRizikovePovolaniKod) {
+                if(confirmedRizikovePovolaniKod) {
+                    params.set("RizikovePovolaniKod", confirmedRizikovePovolaniKod);
+                }
+                callback(callback);
+            }
+        );
+    } else {
+        callback(params);
+    }
+}
+
+function updateZadankaConfirmWindowsAboutParamsFromPosledniZadankaUdajeOPobytu(tab, urlParamsPosledniZadanky, params, callback) {
+
+    if(
+        urlParamsPosledniZadanky.has("TestovanyUlice") &&
+        urlParamsPosledniZadanky.has("TestovanyMesto") &&
+        urlParamsPosledniZadanky.has("TestovanyPSC") &&
+        (decodeURI(params.get("TestovanyUlice")) != urlParamsPosledniZadanky.get("TestovanyUlice") ||
+        decodeURI(params.get("TestovanyMesto")) != urlParamsPosledniZadanky.get("TestovanyMesto") ||
+        params.get("TestovanyPSC") != urlParamsPosledniZadanky.get("TestovanyPSC"))
+    ) {
+        chrome.tabs.sendMessage(tab.id,
+        {
+            text: CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU, 
+            data: {
+                TestovanyUlicePosledniZadanka: urlParamsPosledniZadanky.get("TestovanyUlice"),
+                TestovanyMestoPosledniZadanka: urlParamsPosledniZadanky.get("TestovanyMesto"),
+                TestovanyPSCPosledniZadanka: urlParamsPosledniZadanky.get("TestovanyPSC")
+            }
+        }, function(confirmWindowReturnValue) {
+
+            if(confirmWindowReturnValue) {
+                params.set("TestovanyUlice", urlParamsPosledniZadanky.get("TestovanyUlice"));
+                params.set("TestovanyMesto", urlParamsPosledniZadanky.get("TestovanyMesto"));
+                params.set("TestovanyPSC", urlParamsPosledniZadanky.get("TestovanyPSC"));
+            }
+            callback(params);
+        });
+    } else {
+        callback(params);
+    }
+}
+
+function updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, TestovanyCisloPojistence, params, callback) {
+
+    getUrlParamsPosledniZadanky(TestovanyCisloPojistence, function(urlParamsPosledniZadanky) {
+
+        urlParamsPosledniZadanky = cleanUrlParams(urlParamsPosledniZadanky);
+
+        updateZadankaConfirmWindowsAboutParamsFromPosledniZadankaRizikovePovolaniKod(tab, urlParamsPosledniZadanky, params, function(params) {
+
+            if(params.get("TestovanyNarodnost") != "CZ") {
+                updateZadankaConfirmWindowsAboutParamsFromPosledniZadankaUdajeOPobytu(tab, urlParamsPosledniZadanky, params, function(params) {
+                    callback(params);
+                });
+            } else {
+                callback(params);
+            }
+        });
+    });
+}
+
 function updateZadanka(tab, params) {
 
     params = cleanUrlParams(params);
@@ -972,150 +1093,46 @@ function updateZadanka(tab, params) {
 
         getOptionsFromLocalStorage(function(optionsURLSearchParams) {
 
-            var TypyTestu = params.get("TypyTestu");
-
             var options = new URLSearchParams(optionsURLSearchParams);
-
-            var AGVyrobceTestuKod = options.get(AG_VYROBCE_TESTU_KOD);
-
-            if(AGVyrobceTestuKod && TypyTestu == "Antigen") {
-                params.set("VyrobceTestuKod", AGVyrobceTestuKod);
-            }
-  
-            var OrdinaceICPAG = options.get(ORDINACE_ICP_AG);
-            if(OrdinaceICPAG && TypyTestu == "Antigen") {
-                params.set("OrdinaceICP", OrdinaceICPAG);
-            }
-  
-            var OrdinaceICPPCR = options.get(ORDINACE_ICP_PCR);
-            if(OrdinaceICPPCR && TypyTestu == "PCR") {
-                params.set("OrdinaceICP", OrdinaceICPPCR);
-            }
-
-            var PCRProvedenOdber = options.get(PCR_PROVEDEN_ODBER);
-            if(PCRProvedenOdber == "true" && TypyTestu == "PCR") {
-                params.set("ProvedenOdber", PCRProvedenOdber);
-            }
-  
-            var OdberneMistoKod = options.get(ODBERNE_MISTO_KOD);
-            if(OdberneMistoKod) {
-                params.set("OdberneMistoKod", OdberneMistoKod);
-            }
-  
-            var OrdinaceEmail = options.get(ORDINACE_EMAIL);
-            if(OrdinaceEmail) {
-                params.set("OrdinaceEmail", OrdinaceEmail);
-            }
-  
-            var OrdinaceTelefon = options.get(ORDINACE_TELEFON);
-            if(OdberneMistoKod) {
-                params.set("OrdinaceTelefon", OrdinaceTelefon);
-            }
+            params = setOptionValuesToParams(params, options);
 
             var IsDisabledPopupAboutParamsFromPosledniZadanka = options.get(IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA);
+            var IsDisabledRedirectToPacientiCovid19 = options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
 
             if (IsDisabledPopupAboutParamsFromPosledniZadanka == "false") {
-
-                getUrlParamsPosledniZadanky(params.get("TestovanyCisloPojistence"), (urlParamsPosledniZadanky) => {
-
-                    urlParamsPosledniZadanky = cleanUrlParams(urlParamsPosledniZadanky);
-
-                    urlParamsPosledniZadankyText = urlParamsPosledniZadanky.get("RizikovePovolaniText");
-
-                    if(
-                        params.get("RizikovePovolaniKod") == "Jine" &&
-                        urlParamsPosledniZadankyText &&
-                        urlParamsPosledniZadankyText != "Jine" &&
-                        urlParamsPosledniZadankyText != "null" && 
-                        urlParamsPosledniZadankyText != null
-                    ) {
-                        chrome.tabs.sendMessage(tab.id, {text: 'RizikovePovolaniText', value: urlParamsPosledniZadankyText}, function(rizikovePovolaniKod) {
-
-                            if(rizikovePovolaniKod != params.get("RizikovePovolaniKod")) {
-
-                                var confirmRizikovePovolani = window.confirm("Použít Rizikové povolání - kolektiv: " + urlParamsPosledniZadankyText + "? (poslední žádanka)");
-                                if (confirmRizikovePovolani == true) {
-                                    params.set("RizikovePovolaniKod", rizikovePovolaniKod);
-                                }
-                            }
-                        });
-                    }
-
-                    isEregKsrzisSignedIn(function(isSignedIn) {
-
-                        var oldUrl = new URL(tab.url);
-                        var newUrl = oldUrl.origin + oldUrl.pathname;
-
-                        var IsDisabledRedirectToPacientiCovid19 = options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
-
-                        if(isSignedIn && IsDisabledRedirectToPacientiCovid19 == "false") {
-                            getEregRegistrCUDzadankyZadankaUrl(function(newUrl) {
-                                var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
-                                chrome.tabs.update(
-                                    tab.id,
-                                    {
-                                        url: newUrl + "?" + newUrlParams
-                                    }
-                                );
-                            });
-                        } else {
-                        // adresa z poslední žádanky
-                        if(
-                            urlParamsPosledniZadanky.has("TestovanyUlice") &&
-                            urlParamsPosledniZadanky.has("TestovanyMesto") &&
-                            urlParamsPosledniZadanky.has("TestovanyPSC") &&
-                            (decodeURI(params.get("TestovanyUlice")) != urlParamsPosledniZadanky.get("TestovanyUlice") ||
-                            decodeURI(params.get("TestovanyMesto")) != urlParamsPosledniZadanky.get("TestovanyMesto") ||
-                            params.get("TestovanyPSC") != urlParamsPosledniZadanky.get("TestovanyPSC"))
-                        ) {
-                            var confirmUdajeOPobytu = window.confirm("Použít Údaje o pobytu: " + urlParamsPosledniZadanky.get("TestovanyUlice") + ", " + urlParamsPosledniZadanky.get("TestovanyMesto") + ", " + urlParamsPosledniZadanky.get("TestovanyPSC") + "? (poslední žádanka)");
-      
-                            if (confirmUdajeOPobytu == true) {
-                                params.set("TestovanyUlice", urlParamsPosledniZadanky.get("TestovanyUlice"));
-                                params.set("TestovanyMesto", urlParamsPosledniZadanky.get("TestovanyMesto"));
-                                params.set("TestovanyPSC", urlParamsPosledniZadanky.get("TestovanyPSC"));
-                            }
-                        }
-                            var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
-                            chrome.tabs.update(
-                                tab.id,
-                                {
-                                    url: newUrl + "?" + newUrlParams
-                                }
-                            );
-                        }
-                    });
-                })
-            } else {
-                isEregKsrzisSignedIn(function(isSignedIn) {
-
-                    var oldUrl = new URL(tab.url);
-                    var newUrl = oldUrl.origin + oldUrl.pathname;
-
-                    var IsDisabledRedirectToPacientiCovid19 = options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
-
-                    if(isSignedIn && IsDisabledRedirectToPacientiCovid19 == "false") {
-                        getEregRegistrCUDzadankyZadankaUrl(function(newUrl) {
-                            var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
-                            chrome.tabs.update(
-                                tab.id,
-                                {
-                                    url: newUrl + "?" + newUrlParams
-                                }
-                            );
-                        });
-                    } else {
-                        var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
-                        chrome.tabs.update(
-                            tab.id,
-                            {
-                                url: newUrl + "?" + newUrlParams
-                            }
-                        );
-                    }
+                updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, params.get("TestovanyCisloPojistence"), params, function(params) {
+                    updateZadankaRedirect(tab, IsDisabledRedirectToPacientiCovid19, params);
                 });
+            } else {
+                updateZadankaRedirect(tab, IsDisabledRedirectToPacientiCovid19, params);
             }
         });
+    });
+}
+
+function updateZadankaRedirect(tab, IsDisabledRedirectToPacientiCovid19, params) {
+    isEregKsrzisSignedIn(function(isSignedIn) {
+        if(isSignedIn && IsDisabledRedirectToPacientiCovid19 == "false") {
+            getEregRegistrCUDzadankyZadankaUrl(function(newUrl) {
+                var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
+                chrome.tabs.update(
+                    tab.id,
+                    {
+                        url: newUrl + "?" + newUrlParams
+                    }
+                );
+            });
+        } else {
+            var oldUrl = new URL(tab.url);
+            var newUrl = oldUrl.origin + oldUrl.pathname;
+            var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
+            chrome.tabs.update(
+                tab.id,
+                {
+                    url: newUrl + "?" + newUrlParams
+                }
+            );
+        }
     });
 }
 

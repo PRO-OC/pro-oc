@@ -12,6 +12,38 @@ const IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19 = "IsDisabledRedirectToPacientiC
 const IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA = "IsDisabledPopupAboutParamsFromPosledniZadanka";
 const AG_VYROBCE_LIST_URL = "AGVyrobceListUrl";
 
+const CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI = "ConfirmPosledniZadankaRizikovePovolani";
+const CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU = "ConfirmPosledniZadankaUdajeOPobytu";
+
+chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+    if (msg.text === CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI) {
+        var rizikovePovolaniTextSelectBox = document.getElementById("RizikovePovolaniKod");
+        if (rizikovePovolaniTextSelectBox) {
+            var i;
+            for(i = 0; i < rizikovePovolaniTextSelectBox.options.length; i++) {
+
+                var rizikovePovolaniText = rizikovePovolaniTextSelectBox.options[i].text;
+                var rizikovePovolaniKod = rizikovePovolaniTextSelectBox.options[i].value;
+
+                if(
+                    rizikovePovolaniText === msg.data.RizikovePovolaniTextPosledniZadanka &&
+                    rizikovePovolaniKod != msg.data.RizikovePovolaniKod) {
+
+                    var confirmRizikovePovolani = window.confirm("Použít Rizikové povolání - kolektiv: " + rizikovePovolaniText + "? (poslední žádanka)");
+                    if (confirmRizikovePovolani == true) {
+                        sendResponse(rizikovePovolaniKod);
+                        return;
+                    }
+                }
+            }
+        }
+        sendResponse(null);
+    } else if (msg.text === CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU && msg.data.TestovanyUlicePosledniZadanka && msg.data.TestovanyMestoPosledniZadanka && msg.data.TestovanyPSCPosledniZadanka) {
+        var confirmUdajeOPobytu = window.confirm("Použít Údaje o pobytu: " + msg.data.TestovanyUlicePosledniZadanka + ", " + msg.data.TestovanyMestoPosledniZadanka + ", " + msg.data.TestovanyPSCPosledniZadanka + "? (poslední žádanka)");
+        sendResponse(confirmUdajeOPobytu);
+    }
+});
+
 function getEregRegistrUrl(callback) {
     getEregRegistrDomain(function(eregRegistrDomain) {
         callback("https://" + eregRegistrDomain);
