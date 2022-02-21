@@ -25,34 +25,52 @@ function getOptionsFromLocalStorage(callback) {
   });
 }
 
-function getAGVyrobceTestuUrl(callback) {
+function getAGVyrobceTestuListFetch(url, callback) {
+  fetch(url, {
+    method: 'get'
+  })
+  .then(function (response) {
+    if(response.status == 200) {
+        response.text().then(function(text) {
+          try {
+            var json = JSON.parse(text);
+            callback(json.deviceList ? json.deviceList : []);
+          } catch(err) {
+            callback([]);
+          }
+        });
+    } else {
+      callback([]);
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+    callback([]);
+  });
+}
+
+function getAGVyrobceTestuList(callback) {
 
   getOptionsFromLocalStorage(function(optionsURLSearchParams) {
 
     var options = new URLSearchParams(optionsURLSearchParams);
     var AGVyrobceListUrl = options.get(AG_VYROBCE_LIST_URL);
 
-    callback(AGVyrobceListUrl ? AGVyrobceListUrl : chrome.runtime.getURL("assets/export.json"));
-  });
-}
-
-function getAGVyrobceTestuList(callback) {
-
-  getAGVyrobceTestuUrl(function(url) {
-
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.onreadystatechange = function() {
-      if(xhr.readyState === XMLHttpRequest.DONE) {
-        if(xhr.status == 200) {
-          var data = JSON.parse(xhr.responseText);
-          callback(data.deviceList ? data.deviceList : []);
+    if(AGVyrobceListUrl) {
+      getAGVyrobceTestuListFetch(AGVyrobceListUrl, function(AGVyrobceList) {
+        if(AGVyrobceList.length) {
+          callback(true, AGVyrobceList);
         } else {
-          callback([]);
+          getAGVyrobceTestuListFetch(chrome.runtime.getURL("assets/export.json"), function(AGVyrobceList) {
+            callback(false, AGVyrobceList);
+          });
         }
-      }
+      });
+    } else {
+      getAGVyrobceTestuListFetch(chrome.runtime.getURL("assets/export.json"), function(AGVyrobceList) {
+        callback(false, AGVyrobceList);
+      });
     }
-    xhr.send();
   });
 }
 
@@ -119,23 +137,34 @@ function saveOptions(
   options.set(IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA, IsDisabledPopupAboutParamsFromPosledniZadanka);
   options.set(AG_VYROBCE_LIST_URL, AGVyrobceListUrl);
 
-  // předem uložený i AG vyrobce title, aby se nemusely procházet všichni výrobci při vytahování ze storage
-  getAGVyrobceTestuList(AGVyrobceTestuList => {
+  if(AGVyrobceTestuKod) {
 
-    if(AGVyrobceTestuList && AGVyrobceTestuList.length) {
+    // předem uložený i AG vyrobce title, aby se nemusely procházet všichni výrobci při vytahování ze storage
+    getAGVyrobceTestuList(function(givenUrlWorks, AGVyrobceTestuList) {
 
-      var AGVyrobceTestu = AGVyrobceTestuList.filter(AGVyrobce => AGVyrobce.id_device == AGVyrobceTestuKod)[0];
-      if(AGVyrobceTestu && AGVyrobceTestu.commercial_name && AGVyrobceTestu.manufacturer && AGVyrobceTestu.manufacturer.name) {
-        var AGVyrobceTestuTitle = AGVyrobceTestu.commercial_name + " - " + AGVyrobceTestu.manufacturer.name;
-        options.set(AG_VYROBCE_TESTU_TITLE, AGVyrobceTestuTitle);
+      if(AGVyrobceTestuList && AGVyrobceTestuList.length) {
+
+        var AGVyrobceTestu = AGVyrobceTestuList.filter(AGVyrobce => AGVyrobce.id_device == AGVyrobceTestuKod)[0];
+        if(AGVyrobceTestu && AGVyrobceTestu.commercial_name && AGVyrobceTestu.manufacturer && AGVyrobceTestu.manufacturer.name) {
+          var AGVyrobceTestuTitle = AGVyrobceTestu.commercial_name + " - " + AGVyrobceTestu.manufacturer.name;
+          options.set(AG_VYROBCE_TESTU_TITLE, AGVyrobceTestuTitle);
+        }
+        options.set(AG_VYROBCE_TESTU_KOD, AGVyrobceTestuKod);
       }
-      options.set(AG_VYROBCE_TESTU_KOD, AGVyrobceTestuKod);
-    }
 
+      setOptionsToLocalStorage(options.toString());
+
+      if(givenUrlWorks) {
+        setSubmitResult("Uloženo v " + new Date().toString() + ". List výrobců se ze zadané URL načíst podařilo.");
+      } else {
+        setSubmitResult("Uloženo v " + new Date().toString() + ". List výrobců se ze zadané URL načíst nepodařilo.");
+      }
+    });
+  } else {
     setOptionsToLocalStorage(options.toString());
 
     setSubmitResult("Uloženo v " + new Date().toString());
-  });
+  }
 }
 
 function clearSubmitResult() {
@@ -196,7 +225,7 @@ window.onload = function() {
     setOptionChekboxInputValueToElement(options.get(USE_TEST_REGISTERS) == "true" ? true : false, USE_TEST_REGISTERS);
     setOptionChekboxInputValueToElement(options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19) == "true" ? true : false, IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
     setOptionChekboxInputValueToElement(options.get(IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA) == "true" ? true : false, IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA);
-    getAGVyrobceTestuList(function (AGVyrobceTestuList) {
+    getAGVyrobceTestuList(function (givenUrlWorks, AGVyrobceTestuList) {
       setAGVyrobceTestuList(AGVyrobceTestuList, options.get(AG_VYROBCE_TESTU_KOD));
     });
     setOptionTextInputValueToElement(options.get(AG_VYROBCE_LIST_URL), AG_VYROBCE_LIST_URL);
