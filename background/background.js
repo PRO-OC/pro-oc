@@ -47,17 +47,18 @@ function fixTelefon(telefon) {
     if (!telefon) {
         return null;
     }
-    var telefonTrimmed = telefon.trim();
-    if (!telefonTrimmed.startsWith('+') && telefonTrimmed.length == 9) {
+    var telefonTrimmedAndDecoded = decodeURIComponent(telefon.trim());
+    if (!telefonTrimmedAndDecoded.startsWith('+') && telefonTrimmedAndDecoded.length == 9) {
         // +420
-        return '%2B%0A420' + telefonTrimmed;
-    } else if (!telefonTrimmed.startsWith('+') && telefonTrimmed.length > 9) {
-        // + 
-        return '%2B%0A' + telefonTrimmed;
-    } else if (telefonTrimmed.startsWith('420') && telefonTrimmed.length == 12) {
-        return '%2B%0A' + telefonTrimmed;
+        var test = encodeURIComponent('+420' + telefonTrimmedAndDecoded);
+        return encodeURIComponent('+420' + telefonTrimmedAndDecoded);
+    } else if (!telefonTrimmedAndDecoded.startsWith('+') && telefonTrimmedAndDecoded.length > 9) {
+        // +
+        var test = encodeURIComponent('+' + telefonTrimmedAndDecoded);
+        return encodeURIComponent('+' + telefonTrimmedAndDecoded);
     }
-    return telefonTrimmed;
+    var test = encodeURIComponent(telefonTrimmedAndDecoded);
+    return encodeURIComponent(telefonTrimmedAndDecoded);
 }
 
 function getOptionsFromLocalStorage(callback) {
