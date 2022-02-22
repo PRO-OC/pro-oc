@@ -42,6 +42,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         var confirmUdajeOPobytu = window.confirm("Použít Údaje o pobytu: " + msg.data.TestovanyUlicePosledniZadanka + ", " + msg.data.TestovanyMestoPosledniZadanka + ", " + msg.data.TestovanyPSCPosledniZadanka + "? (poslední žádanka)");
         sendResponse(confirmUdajeOPobytu);
     }
+    return true;
 });
 
 function getEregRegistrUrl(callback) {
