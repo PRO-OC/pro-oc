@@ -489,11 +489,11 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
 
 function getSelectedTab(callback) {
     if(typeof browser === 'undefined') {
-        chrome.tabs.query({active: true}, function(tabs) {
+        chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
             callback(tabs[0]);
         });
     } else {
-        browser.tabs.query({active: true}).then(function (tabs) {
+        browser.tabs.query({active: true, lastFocusedWindow: true}).then(function (tabs) {
             callback(tabs[0]);
         });
     }
