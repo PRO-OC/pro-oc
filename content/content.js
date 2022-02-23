@@ -1047,7 +1047,7 @@ if(
                     });
                 }, false);
 
-                uttonTd.appendChild(setOckoUzisTelefonEmailDivElement);
+                buttonTd.appendChild(setOckoUzisTelefonEmailDivElement);
 
                 trUlozitNaProfil.appendChild(document.createElement("td"));
                 trUlozitNaProfil.appendChild(buttonTd);
