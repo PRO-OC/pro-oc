@@ -87,7 +87,7 @@ Zmíněné šablony jdou částečně upravit v nastavení v sekci **Nastavení 
 - Použití šablony odstraňuje u telefonního čísla první mezeru, přidává (počet čísel > 9) pokud chybí **+** (resp. **%2B%0A**), u českého telefonního (9 čísel) přidává i předvolbu (tzn. **+420**)
 - V případě zadání datumu narození ve formátu **1965-01-13T00:00:00** použití šablony převádí datum narození na formát **13.1.1965**
 
-- Pouze u cizinců se při použití šablony zobrazí vyskakovací okno s informací **Údaje o pobytu** a pro všechny **Rizikové povolání** z minulé žádanky. V případě, že nějaká vystavená byla. Informace s **Rizikové povolání** se nabídne v případě, že v minulé žádance nebyla použita defaultní možnost Jiné a v URL aktuální žádanky je nastavená defaultní možnost Jiné. Toto napovídání z předchozí žádanky lze vypnout v nastavení.
+- U cizinců nebo i u občanů ČR v případě, že se vytváření žádanky nebude přesměrovávat do ereg (je to v nastavení zakázané nebo není provedeno přihlášení), kde je ROB (register obyvatel) se při použití šablony zobrazí vyskakovací potvrzovací okno **Údaje o pobytu** a **Rizikové povolání** z minulé žádanky. V případě, že nějaká vystavená byla a **Rizikové povolání** se nabídne pouze v případě, že v minulé žádance nebyla použita defaultní možnost Jiné a v URL aktuální žádanky je nastavená defaultní možnost Jiné. Toto napovídání z předchozí žádanky lze vypnout v nastavení.
 
 - Na stránce nastavení je možné zapnout použití testovacích registrů. (např. to znamená, že v případě použití některé z šablon dojde k přesměrování buď na **testovací** registr **Pacienti COVID-19** nebo **Žádanky testů Covid 19**)
 

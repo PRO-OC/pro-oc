@@ -528,6 +528,10 @@ function updateZadankaPCRpojistovna() {
 
     getSelectedTab(function(tab) {
 
+        if(!tab) {
+            return;
+        }
+
         var url = new URL(tab.url);
 
         isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
@@ -567,6 +571,10 @@ function updateZadankaPCRsamoplatce() {
 
     getSelectedTab(function(tab) {
   
+        if(!tab) {
+            return;
+        }
+
         var url = new URL(tab.url);
 
         isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
@@ -606,6 +614,10 @@ function updateZadankaPCRkonfirmacniPojistovna() {
 
     getSelectedTab(function(tab) {
   
+        if(!tab) {
+            return;
+        }
+
         var url = new URL(tab.url);
 
         isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
@@ -646,6 +658,10 @@ function updateZadankaPCRkonfirmacniSamoplatce() {
 
     getSelectedTab(function(tab) {
   
+        if(!tab) {
+            return;
+        }
+
         var url = new URL(tab.url);
 
         isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
@@ -686,6 +702,10 @@ function updateZadankaAGpojistovna() {
 
     getSelectedTab(function(tab) {
   
+        if(!tab) {
+            return;
+        }
+
         var url = new URL(tab.url);
 
         isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
@@ -726,6 +746,10 @@ function updateZadankaAGsamoplatce() {
 
     getSelectedTab(function(tab) {
       
+        if(!tab) {
+            return;
+        }
+
         var url = new URL(tab.url);
 
         isUrlRegistrZadanka(url, function(isUrlRegistrZadanka) {
@@ -1062,7 +1086,7 @@ function updateZadankaConfirmWindowsAboutParamsFromPosledniZadankaUdajeOPobytu(t
     }
 }
 
-function updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, TestovanyCisloPojistence, params, callback) {
+function updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, isDisabledUdajeOPobytuConfirmWindow, TestovanyCisloPojistence, params, callback) {
 
     getUrlParamsPosledniZadanky(TestovanyCisloPojistence, function(urlParamsPosledniZadanky) {
 
@@ -1070,7 +1094,7 @@ function updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, Testovan
 
         updateZadankaConfirmWindowsAboutParamsFromPosledniZadankaRizikovePovolaniKod(tab, urlParamsPosledniZadanky, params, function(params) {
 
-            if(params.get("TestovanyNarodnost") != "CZ") {
+            if(!isDisabledUdajeOPobytuConfirmWindow) {
                 updateZadankaConfirmWindowsAboutParamsFromPosledniZadankaUdajeOPobytu(tab, urlParamsPosledniZadanky, params, function(params) {
                     callback(params);
                 });
@@ -1100,32 +1124,23 @@ function updateZadanka(tab, params) {
             var IsDisabledPopupAboutParamsFromPosledniZadanka = options.get(IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA);
             var IsDisabledRedirectToPacientiCovid19 = options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
 
-            if (IsDisabledPopupAboutParamsFromPosledniZadanka == "false") {
-                updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, params.get("TestovanyCisloPojistence"), params, function(params) {
-                    updateZadankaRedirect(tab, IsDisabledRedirectToPacientiCovid19, params);
-                });
-            } else {
-                updateZadankaRedirect(tab, IsDisabledRedirectToPacientiCovid19, params);
-            }
+            isEregKsrzisSignedIn(function(isSignedIn) {
+                const redirectToEreg = isSignedIn && IsDisabledRedirectToPacientiCovid19 != "true";
+                if (IsDisabledPopupAboutParamsFromPosledniZadanka != "true") {
+                    updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, redirectToEreg, params.get("TestovanyCisloPojistence"), params, function(params) {
+                        updateZadankaRedirect(tab, redirectToEreg, params);
+                    });
+                } else {
+                    updateZadankaRedirect(tab, redirectToEreg, params);
+                }
+            });
         });
     });
 }
 
-function updateZadankaRedirect(tab, IsDisabledRedirectToPacientiCovid19, params) {
-    isEregKsrzisSignedIn(function(isSignedIn) {
-        if(isSignedIn && IsDisabledRedirectToPacientiCovid19 == "false") {
-            getEregRegistrCUDzadankyZadankaUrl(function(newUrl) {
-                var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
-                chrome.tabs.update(
-                    tab.id,
-                    {
-                        url: newUrl + "?" + newUrlParams
-                    }
-                );
-            });
-        } else {
-            var oldUrl = new URL(tab.url);
-            var newUrl = oldUrl.origin + oldUrl.pathname;
+function updateZadankaRedirect(tab, redirectToEreg, params) {
+    if(redirectToEreg) {
+        getEregRegistrCUDzadankyZadankaUrl(function(newUrl) {
             var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
             chrome.tabs.update(
                 tab.id,
@@ -1133,8 +1148,18 @@ function updateZadankaRedirect(tab, IsDisabledRedirectToPacientiCovid19, params)
                     url: newUrl + "?" + newUrlParams
                 }
             );
-        }
-    });
+        });
+    } else {
+        var oldUrl = new URL(tab.url);
+        var newUrl = oldUrl.origin + oldUrl.pathname;
+        var newUrlParams = getUrlFromUrlSearchParamsWithoutEncoding(params);
+        chrome.tabs.update(
+            tab.id,
+            {
+                url: newUrl + "?" + newUrlParams
+            }
+        );
+    }
 }
 
 function isUrlRegistrZadanka(url, callback) {
