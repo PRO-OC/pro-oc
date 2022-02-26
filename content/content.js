@@ -14,6 +14,7 @@ const AG_VYROBCE_LIST_URL = "AGVyrobceListUrl";
 
 const CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI = "ConfirmPosledniZadankaRizikovePovolani";
 const CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU = "ConfirmPosledniZadankaUdajeOPobytu";
+const IS_ACTIVE_EREG_ROLE = "IsActiveEregRole";
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     if (msg.text === CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI) {
@@ -41,6 +42,16 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     } else if (msg.text === CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU && msg.data.TestovanyUlicePosledniZadanka && msg.data.TestovanyMestoPosledniZadanka && msg.data.TestovanyPSCPosledniZadanka) {
         var confirmUdajeOPobytu = window.confirm("Použít Údaje o pobytu: " + msg.data.TestovanyUlicePosledniZadanka + ", " + msg.data.TestovanyMestoPosledniZadanka + ", " + msg.data.TestovanyPSCPosledniZadanka + "? (poslední žádanka)");
         sendResponse(confirmUdajeOPobytu);
+    } else if (msg.text === IS_ACTIVE_EREG_ROLE && msg.data.text && msg.data.roleName) {
+        var parser = new DOMParser();
+        var responseDocument = parser.parseFromString(msg.data.text,"text/html");
+        var jenPOCTElement = responseDocument.getElementById("JenPOCT"); 
+
+        if(jenPOCTElement && jenPOCTElement.value.toLowerCase() == "false") {
+            sendResponse(true);
+        } else {
+            sendResponse(false);
+        }
     }
     return true;
 });
