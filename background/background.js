@@ -1046,7 +1046,7 @@ function updateZadankaConfirmWindowsAboutParamsFromPosledniZadankaRizikovePovola
                 if(confirmedRizikovePovolaniKod) {
                     params.set("RizikovePovolaniKod", confirmedRizikovePovolaniKod);
                 }
-                callback(callback);
+                callback(params);
             }
         );
     } else {
