@@ -552,7 +552,7 @@ function setOckoUzisPatientDetailLink(link) {
 loadAndShowOckoUzisLastPatientActiveRequestIfExists();
 loadAndSetOckoUzisPatientInformation();
 
-if(editFormElement && TestovanyTelefon) {
+if(editFormElement && TestovanyTelefonElement) {
     var OckoUzisUlozitZeZadankyColumnDivElement = document.createElement("div");
     OckoUzisUlozitZeZadankyColumnDivElement.setAttribute("class", "oneColumn");
 
@@ -586,7 +586,7 @@ if(editFormElement && TestovanyTelefon) {
     OckoUzisUlozitFieldGraphicElement.appendChild(OckoUzisUlozitZeZadankyLabelElement);
     OckoUzisUlozitZeZadankyColumnDivElement.appendChild(OckoUzisUlozitFieldGraphicElement);
 
-    TestovanyTelefon.parentNode.parentNode.parentNode.insertBefore(OckoUzisUlozitZeZadankyColumnDivElement, TestovanyTelefon.parentNode.parentNode.nextSibling);
+    TestovanyTelefonElement.parentNode.parentNode.parentNode.insertBefore(OckoUzisUlozitZeZadankyColumnDivElement, TestovanyTelefonElement.parentNode.parentNode.nextSibling);
 }
 
 
