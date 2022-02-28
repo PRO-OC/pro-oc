@@ -10,6 +10,10 @@ Rozšíření přidává užitečné funkce do modulu [Pacienti COVID-19](https:
 
 Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COVID-19](https://ereg.ksrzis.cz/Registr/CUDZadanky/VyhledaniPacienta) a webové aplikace [Žádanky testů COVID-19](https://eregpublicsecure.ksrzis.cz/Registr/CUD/Overeni) jsou použity pouze pro přidání nových funkcí zmíněných níže. Přidané funkce využívají již stávajících funkcí obou systémů. **Žádná data nejsou jakkoliv zpracovávána ani přeposílána mimo tyto systémy.**
 
+## Změny pro Mozilla Firefox
+
+- Použití manifest souboru s verzí 2 manifest.v2.json
+
 ## Žádanky testů COVID-19
 
 - Přidává tlačítko **Stáhnout certifikát** na stránku Overovani
