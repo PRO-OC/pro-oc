@@ -24,6 +24,9 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 
 ![Preview](preview/aktivni_zadanky_tlacitko_zkontrolovat_zadanku.png)
 
+![Preview](preview/aktivni_zadanka_jiz_existuje.png)
+
+
 - Na stránce Oveření antigenního testu předvyplnuje kód a title výrobce z nastavení a negativní výsledek
 
 ![Preview](preview/predvyplnovani_ag_vyrobce_a_negativniho_vysledku.png)

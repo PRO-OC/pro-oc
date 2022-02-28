@@ -401,6 +401,8 @@ function loadAndShowOckoUzisLastPatientActiveRequestIfExists() {
 
                 if(zadankaData && zadankaData.Vysledek == "ZadankaExistuje") {
 
+                    alert("Aktivní žádanka již existuje.");
+
                     var zkontrolovatZadankuFormId = "zkontrolovat-zadanku-form-id";
                     var zkontrolovatZadankuForm = document.getElementById(zkontrolovatZadankuFormId);
  
