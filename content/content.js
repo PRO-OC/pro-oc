@@ -498,23 +498,25 @@ function loadAndSetOckoUzisPatientInformation() {
                 "CisloPojistence": CisloPojistence
             }
         }, function(response) {
-            var PatientInfo = getPatientInfoFromPatientDetail(response.url, response.text);
+            if(response && response.url && response.text) {
+                var PatientInfo = getPatientInfoFromPatientDetail(response.url, response.text);
 
-            const detailPacientaFormId = "detail-pacienta-form";
+                const detailPacientaFormId = "detail-pacienta-form";
 
-            if(PatientInfo.Cislo) {
-                setOckoUzisPatientCredentials(PatientInfo.Telefon, PatientInfo.Email);
-                setOckoUzisPatientDetailEditLink(PatientInfo.EditLink);
-                setOckoUzisPatientDetailLink(PatientInfo.Link);
+                if(PatientInfo.Cislo) {
+                    setOckoUzisPatientCredentials(PatientInfo.Telefon, PatientInfo.Email);
+                    setOckoUzisPatientDetailEditLink(PatientInfo.EditLink);
+                    setOckoUzisPatientDetailLink(PatientInfo.Link);
 
-                var form = document.getElementById(detailPacientaFormId);
-                if(form) {
-                    form.parentNode.removeChild(form);
+                    var form = document.getElementById(detailPacientaFormId);
+                    if(form) {
+                        form.parentNode.removeChild(form);
+                    }
+                } else {
+                    createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence, false, function(form) {
+                        actionsDiv.appendChild(form);
+                    }, detailPacientaFormId);
                 }
-            } else {
-                createVyhledaniPacientaForm(Jmeno, Prijmeni, DatumNarozeni, StatniPrislusnost, CisloPojistence, false, function(form) {
-                    actionsDiv.appendChild(form);
-                }, detailPacientaFormId);
             }
         });
     } else {
