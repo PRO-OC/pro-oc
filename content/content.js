@@ -182,6 +182,55 @@ function getRegistrCUDZadankyVyhledaniPacientaPrehledVsechUrl(callback) {
     });
 }
 
+function padStart(num, padLen, padChar) {
+    var pad = new Array(1 + padLen).join(padChar);
+    return (pad + num).slice(-pad.length);
+}
+
+function isInsuranceNumberEqualToDateOfBirth() {
+
+    if(!TestovanyCisloPojistenceElement || !TestovanyCisloPojistenceElement.value) {
+        return;
+    }
+
+    if(TestovanyCisloPojistenceElement.value.length < 10) {
+        return;
+    }
+
+    if(!TestovanyDatumNarozeniElement || !TestovanyDatumNarozeniElement.value) {
+        return;
+    }
+
+    if(TestovanyDatumNarozeniElement.value.length < 7 || !(TestovanyDatumNarozeniElement.value.split(".")[2]) || parseInt(TestovanyDatumNarozeniElement.value.split(".")[2]) < 1900) {
+        return;
+    }
+
+    const DatumNarozeni = getDateDDdotMMdotYYYY(TestovanyDatumNarozeniElement.value);
+    const DatumNarozeniYear = parseInt(DatumNarozeni.split(".")[2]);
+    const DatumNarozeniDay = parseInt(DatumNarozeni.split(".")[0]);
+    const DatumNarozeniMonth = parseInt(DatumNarozeni.split(".")[1]);
+    const DatumNarozeniMonthWoman = parseInt(DatumNarozeni.split(".")[1]) + 50;
+
+    const TestovanyCisloPojistenceYear = parseInt(TestovanyCisloPojistenceElement.value.substring(0, 2));
+    const TestovanyCisloPojistenceMonth = parseInt(TestovanyCisloPojistenceElement.value.substring(2, 4));
+    const TestovanyCisloPojistenceDay = parseInt(TestovanyCisloPojistenceElement.value.substring(5, 6));
+
+    if(
+        TestovanyCisloPojistenceYear != DatumNarozeniYear ||
+        (TestovanyCisloPojistenceMonth != DatumNarozeniMonth && parseInt(TestovanyCisloPojistenceElement.value.substring(0, 2)) != DatumNarozeniMonthWoman) ||
+        TestovanyCisloPojistenceDay != DatumNarozeniDay) {
+
+            const TestovanyCisloPojistenceCorrectStart = DatumNarozeniYear.toString().substring(2, 4).concat( padStart(DatumNarozeniMonth, 2, "0"), padStart(DatumNarozeniDay, 2, "0"));
+            const TestovanyCisloPojistenceCorrectStartWoman = DatumNarozeniYear.toString().substring(2, 4).concat( padStart(DatumNarozeniMonth, 2, "0"), padStart(DatumNarozeniDay + 50, 2, "0"));
+
+            const text = "Aby se po zadání výsledku laboratoří správně vygeneroval certifikát na ocko.uzis.cz / Tečce, musí jít z čísla pojištěnce odvodit datum narození.\n\n" +
+                         "Číslo pojištěnce tedy musí v tomto případě začínat: muž " + TestovanyCisloPojistenceCorrectStart + " nebo žena " + TestovanyCisloPojistenceCorrectStartWoman +
+                         "\n\nA následovat může 9999 nebo 4 náhodná čísla.";
+
+            alert(text);
+    }
+}
+
 const TestovanyJmenoElement = document.getElementById("TestovanyJmeno");
 const TestovanyPrijmeniElement = document.getElementById("TestovanyPrijmeni");
 const TestovanyNarodnostElement = document.getElementById("TestovanyNarodnost");
@@ -206,6 +255,7 @@ if(TestovanyPrijmeniElement) {
 if(TestovanyCisloPojistenceElement) {
     TestovanyCisloPojistenceElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
     TestovanyCisloPojistenceElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
+    TestovanyCisloPojistenceElement.addEventListener('input', isInsuranceNumberEqualToDateOfBirth);
 }
 if(TestovanyNarodnostElement) {
     TestovanyNarodnostElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
@@ -214,6 +264,7 @@ if(TestovanyNarodnostElement) {
 if(TestovanyDatumNarozeniElement) {
     TestovanyDatumNarozeniElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
     TestovanyDatumNarozeniElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
+    TestovanyDatumNarozeniElement.addEventListener('input', isInsuranceNumberEqualToDateOfBirth);
 }
 
 function removeReadOnlyOckoUzisPatientCredentials() {
@@ -948,7 +999,18 @@ if(
     formActionsElement.appendChild(detailZadankyZadankyTestuCovid19Button);
 }
 
-
+function getDateDDdotMMdotYYYY(date) {
+    var day = date.substr(0, date.indexOf('.'));
+    var month = date.substr(date.indexOf('.') + 1, date.lastIndexOf('.') - date.indexOf('.') - 1) - 1;
+    var year = date.substr(date.lastIndexOf('.') + 1, date.length + 1);
+    var dateObj = new Date(year, month, day);
+  
+    if (isNaN(dateObj.getTime())) {
+      dateObj = new Date(date);
+    }
+    
+    return dateObj.getDate() + "." + (dateObj.getMonth() + 1) + "." + dateObj.getFullYear();
+}
 
 
 const KontaktniUdajeElement = Array.from(document.querySelectorAll('th')).find(el => el.textContent.includes('Kontaktní údaje'));
