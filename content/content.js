@@ -255,7 +255,6 @@ if(TestovanyPrijmeniElement) {
 if(TestovanyCisloPojistenceElement) {
     TestovanyCisloPojistenceElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
     TestovanyCisloPojistenceElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
-    TestovanyCisloPojistenceElement.addEventListener('input', isInsuranceNumberEqualToDateOfBirth);
 }
 if(TestovanyNarodnostElement) {
     TestovanyNarodnostElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
@@ -264,7 +263,6 @@ if(TestovanyNarodnostElement) {
 if(TestovanyDatumNarozeniElement) {
     TestovanyDatumNarozeniElement.addEventListener('input', loadAndSetOckoUzisPatientInformation);
     TestovanyDatumNarozeniElement.addEventListener('input', loadAndShowOckoUzisLastPatientActiveRequestIfExists);
-    TestovanyDatumNarozeniElement.addEventListener('input', isInsuranceNumberEqualToDateOfBirth);
 }
 
 function removeReadOnlyOckoUzisPatientCredentials() {

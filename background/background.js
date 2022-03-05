@@ -996,6 +996,30 @@ function getDateDDdotMMdotYYYY(date) {
     return dateObj.getDate() + "." + (dateObj.getMonth() + 1) + "." + dateObj.getFullYear();
 }
 
+function padStart(num, padLen, padChar) {
+    var pad = new Array(1 + padLen).join(padChar);
+    return (pad + num).slice(-pad.length);
+}
+
+function fixCisloPojistence(TestovanyDatumNarozeni, TestovanyCisloPojistence) {
+
+    const DatumNarozeni = getDateDDdotMMdotYYYY(TestovanyDatumNarozeni);
+    const DatumNarozeniYear = parseInt(DatumNarozeni.split(".")[2]);
+    const DatumNarozeniDay = parseInt(DatumNarozeni.split(".")[0]);
+    const DatumNarozeniMonth = parseInt(DatumNarozeni.split(".")[1]);
+
+    const TestovanyCisloPojistenceFromTestovanyDatumNarozeni = DatumNarozeniYear.toString().substring(2, 4).concat(padStart(DatumNarozeniMonth, 2, "0"), padStart(DatumNarozeniDay, 2, "0"))
+    const TestovanyCisloPojistenceMonth = parseInt(TestovanyCisloPojistence.substring(2, 4));
+
+    if(TestovanyCisloPojistence.length != 10) {
+        return TestovanyCisloPojistenceFromTestovanyDatumNarozeni.concat("9999");
+    } else if(TestovanyCisloPojistenceMonth == DatumNarozeniMonth || TestovanyCisloPojistenceMonth == DatumNarozeniMonth + 50) {
+        return DatumNarozeniYear.toString().substring(2, 4).concat(padStart(TestovanyCisloPojistenceMonth, 2, "0"), padStart(DatumNarozeniDay, 2, "0"), TestovanyCisloPojistence.toString().substring(6, 11));
+    } else {
+        return TestovanyCisloPojistenceFromTestovanyDatumNarozeni.concat(TestovanyCisloPojistence.toString().substring(6, 11));
+    }
+}
+
 function fixParams(params) {
     if(params.get("TestovanyDatumNarozeni")) {
         params.set("TestovanyDatumNarozeni", getDateDDdotMMdotYYYY(params.get("TestovanyDatumNarozeni")));
@@ -1005,6 +1029,9 @@ function fixParams(params) {
     }
     if(params.get("TestovanyTelefon")) {
         params.set("TestovanyTelefon", fixTelefon(params.get("TestovanyTelefon")));
+    }
+    if(params.get("TestovanyNarodnost") != "CZ") {
+        params.set("TestovanyCisloPojistence", fixCisloPojistence(params.get("TestovanyDatumNarozeni"), params.get("TestovanyCisloPojistence")));
     }
     return params;
 }
