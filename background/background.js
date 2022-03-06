@@ -930,9 +930,9 @@ function getUrlParamsPosledniZadanky(cisloPojistence, callback) {
                 })
                 .then(function (response) {
                     if(response.status == 200) {
-                        response.json().then(function(json) {
+                        response.json().then(function(data) {
 
-                            resultUrlParams = setUrlParamsPosledniZadankyToUrlParams(resultUrlParams, json);
+                            resultUrlParams = setUrlParamsPosledniZadankyToUrlParams(resultUrlParams, data);
 
                             if(
                                 resultUrlParams.has("RizikovePovolaniKod") &&
@@ -941,7 +941,7 @@ function getUrlParamsPosledniZadanky(cisloPojistence, callback) {
                                 resultUrlParams.has("TestovanyPSC")
                             ) {
                                 callback(resultUrlParams);
-                            } else if (json.Vysledek == "ExistujeViceZadanekProDaneRC") {
+                            } else if (data.Vysledek == "ExistujeViceZadanekProDaneRC") {
 
                                 var posledniZadanka = data.ExistujiciZadanky[data.ExistujiciZadanky.length - 1];
 
@@ -957,8 +957,8 @@ function getUrlParamsPosledniZadanky(cisloPojistence, callback) {
                                     })
                                     .then(function (response) {
                                         if(response.status == 200) {
-                                            response.json().then(function(json) {
-                                                resultUrlParams = setUrlParamsPosledniZadankyToUrlParams(resultUrlParams, json);
+                                            response.json().then(function(data) {
+                                                resultUrlParams = setUrlParamsPosledniZadankyToUrlParams(resultUrlParams, data);
                                                 callback(resultUrlParams);
                                             });
                                         }
