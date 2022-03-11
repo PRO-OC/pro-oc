@@ -995,20 +995,6 @@ if(
     formActionsElement.appendChild(detailZadankyZadankyTestuCovid19Button);
 }
 
-function getDateDDdotMMdotYYYY(date) {
-    var day = date.substr(0, date.indexOf('.'));
-    var month = date.substr(date.indexOf('.') + 1, date.lastIndexOf('.') - date.indexOf('.') - 1) - 1;
-    var year = date.substr(date.lastIndexOf('.') + 1, date.length + 1);
-    var dateObj = new Date(year, month, day);
-  
-    if (isNaN(dateObj.getTime())) {
-      dateObj = new Date(date);
-    }
-    
-    return dateObj.getDate() + "." + (dateObj.getMonth() + 1) + "." + dateObj.getFullYear();
-}
-
-
 const KontaktniUdajeElement = Array.from(document.querySelectorAll('th')).find(el => el.textContent.includes('Kontaktní údaje'));
 const printDiv = document.getElementById("printDiv");
 

@@ -955,10 +955,13 @@ function fixParams(params) {
         params.set("TestovanyTelefon", fixTelefon(params.get("TestovanyTelefon")));
     }
     if(
-        params.get("ZdravotniPojistovnaKod") == "300" || 
-        params.get("ZdravotniPojistovnaKod") == "800" ||
-        params.get("ZdravotniPojistovnaKod") == "999" ||
-        params.get("ZdravotniPojistovnaKod") == "CIZ") {
+        params.get("TestovanyDatumNarozeni") &&
+        params.get("TestovanyCisloPojistence") &&
+        (
+            params.get("ZdravotniPojistovnaKod") == "300" || 
+            params.get("ZdravotniPojistovnaKod") == "800" ||
+            params.get("ZdravotniPojistovnaKod") == "999" ||
+            params.get("ZdravotniPojistovnaKod") == "CIZ")) {
         params.set("TestovanyCisloPojistence", fixCisloPojistence(params.get("TestovanyDatumNarozeni"), params.get("TestovanyCisloPojistence")));
     }
     return params;
