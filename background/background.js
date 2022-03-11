@@ -172,18 +172,6 @@ function redirectToPacientiCovid19() {
     });
 }
 
-function getRegistrCUDZadankyMojeZadankyEditaceUrlParams(ProvedenOdber) {
-    var urlParams = new URLSearchParams();
-    urlParams.set("ProvedenOdber", ProvedenOdber);
-    return urlParams;
-}
-
-function getRegistrCUDZadankyMojeZadankyEditaceUrl(CisloZadanky, callback) {
-    getEregRegistrUrl(function(eregRegistrUrl) {
-        callback(eregRegistrUrl + "/Registr/CUDZadanky/MojeZadanky/Editace/" + CisloZadanky);
-    });
-}
-
 function getRegistrCUDVyhledaniPacientaUrl(callback) {
     getEregRegistrUrl(function(eregRegistrUrl) {
         callback(eregRegistrUrl + "/Registr/CUDZadanky/VyhledaniPacienta");
@@ -204,60 +192,6 @@ function getRegistrCUDVyhledaniPacientaUrlParams(zadanka) {
     }
     urlParams.set("_submit", "None");
     return urlParams;
-}
-
-function getRegistrCUDZadankyMojeZadankyStornoUrl(CisloZadanky, callback) {
-    getEregRegistrUrl(function(eregRegistrUrl) {
-        callback(eregRegistrUrl + "/Registr/CUDZadanky/MojeZadanky/Storno/" + CisloZadanky);
-    });
-}
-
-function unsetProvedenOdber(Cislo, callback) {
-    getRegistrCUDZadankyMojeZadankyEditaceUrl(Cislo, function(url) {
-
-        var urlParams = getRegistrCUDZadankyMojeZadankyEditaceUrlParams(false);
-
-        fetch(url, {
-            method: 'post',
-            headers: {
-                'Content-type': 'application/x-www-form-urlencoded'
-            },
-            body: urlParams.toString()
-        })
-        .then(function (response) {
-            if(response.status == 200) {
-                callback(true);
-            } else {
-                return;
-            }
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    });
-}
-
-function stornoZadanka(Cislo, callback) {
-    getRegistrCUDZadankyMojeZadankyStornoUrl(Cislo, function(url) {
-
-        fetch(url, {
-            method: 'post',
-            headers: {
-                'Content-type': 'application/x-www-form-urlencoded'
-            },
-            body: urlParams.toString()
-        })
-        .then(function (response) {
-            if(response.status == 200) {
-                callback(true);
-            } else {
-                return;
-            }
-        })
-        .catch(function (error) {
-              console.log(error);
-        });
-    });
 }
 
 function getPatientDetail(zadanka, callback) {
@@ -408,16 +342,6 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     if (msg.text === 'GetPatientDetail') {
         getPatientDetail(msg.data, response => {
             sendResponse(response);
-        });
-        return true;
-    } else if(msg.text === 'ZrusitProvedenOdber' && msg.data.Cislo) {
-        unsetProvedenOdber(msg.data.Cislo, function(result) {
-            sendResponse(result);
-        });
-        return true;
-    } else if(msg.text === 'StornoZadanka' && msg.data.Cislo) {
-        stornoZadanka(msg.data.Cislo, function(result) {
-            sendResponse(result);
         });
         return true;
     } else if(msg.text === 'GetZadankaData' && msg.data) {

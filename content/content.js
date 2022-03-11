@@ -862,9 +862,65 @@ if(
     accordionZadankyActions.appendChild(vyhledatMojeZadankyLinkElement);
 }
 
+function getRegistrCUDZadankyMojeZadankyEditaceUrlParams(ProvedenOdber) {
+    var urlParams = new URLSearchParams();
+    urlParams.set("ProvedenOdber", ProvedenOdber);
+    return urlParams;
+}
+
+function getRegistrCUDZadankyMojeZadankyEditaceUrl(IdZadanky) {
+    return "/Registr/CUDZadanky/MojeZadanky/Editace/" + IdZadanky;
+}
+
+
+function getRegistrCUDZadankyMojeZadankyStornoUrl(IdZadanky) {
+    return "/Registr/CUDZadanky/MojeZadanky/Storno/" + IdZadanky;
+}
+
+
+function getRegistrCUDZadankyMojeZadankyStornoUrlParams(IdZadanky) {
+    var urlParams = new URLSearchParams();
+    urlParams.set("Id", IdZadanky);
+    return urlParams;
+}
+
+function stornoPCRZadanka(IdZadanky, callback) {
+
+    var url = getRegistrCUDZadankyMojeZadankyStornoUrl(IdZadanky);
+    var urlParams = getRegistrCUDZadankyMojeZadankyStornoUrlParams(IdZadanky);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
+            callback(true);
+        }
+    }
+
+    xhr.send(urlParams.toString());
+}
+
+function unsetPCRProvedenOdber(IdZadanky, callback) {
+
+    var url = getRegistrCUDZadankyMojeZadankyEditaceUrl(IdZadanky);
+    var urlParams = getRegistrCUDZadankyMojeZadankyEditaceUrlParams(false);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
+            callback(true);
+        }
+    }
+
+    xhr.send(urlParams.toString());
+}
+
 var ZadankaCisloElement = document.querySelector('label[for="Zadanka_Cislo"]');
 var ZadankaProvedenOdber = document.getElementById('Zadanka_ProvedenOdber');
 var IsZadankaDetail = window.location.href.includes("/Detail/");
+
 
 if(
     IsZadankaDetail &&
@@ -892,25 +948,16 @@ if(
                     (ZadankaProvedenOdber && ZadankaProvedenOdber.checked) ||
                     (ProvedenOdberElement && ProvedenOdberElement.checked)
                 ) {
-                    chrome.runtime.sendMessage({
-                        "text": "ZrusitProvedenOdber",
-                        "data": {
-                            "Cislo": IdZadanky
-                        }
-                    }, function (resultEdit) {
 
+                    unsetPCRProvedenOdber(IdZadanky, function(resultEdit) {
                         if(resultEdit) {
 
                             var confirmZrušit = window.confirm("Opravdu chcete zrušit žádanku?");
                             if (confirmZrušit == true) {
 
-                                chrome.runtime.sendMessage({
-                                    "text": "StornoZadanka",
-                                    "data": {
-                                        "Cislo": IdZadanky
-                                    }
-                                }, function (stornoZadanka) {
-                                    if(stornoZadanka) {
+                                stornoPCRZadanka(IdZadanky, function(resultStorno) {
+
+                                    if(resultStorno) {
                                         window.location.href = getRegistrCUDZadankyMojeZadankyPage();
                                     }
                                 });
