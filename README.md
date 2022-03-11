@@ -13,6 +13,7 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 ## Změny pro Mozilla Firefox
 
 - Použití manifest souboru s verzí 2 manifest.v2.json
+- Klávesové zkratky nelze v Mozille Firefox měnit, tzn. z toho důvodu je potřeba přenastavit klávesové zkratky, které blokují zvolené pro rozšíření. V případě použití ``ALT + A / S`` a ``ALT + P / O`` je potřeba na stránce ``about:config`` přenastavit ``ui.key.menuAccessKey = 17``. Menu bude poté reagovat ne na ALT + key, ale na ALT + SHIFT + key.
 
 ## Žádanky testů COVID-19
 
@@ -29,7 +30,6 @@ Osobní informace pacientů podmíněné přihlášením do modulu [Pacienti COV
 ![Preview](preview/aktivni_zadanky_tlacitko_zkontrolovat_zadanku.png)
 
 ![Preview](preview/aktivni_zadanka_jiz_existuje.png)
-
 
 - Na stránce Oveření antigenního testu předvyplnuje kód a title výrobce z nastavení a negativní výsledek
 
