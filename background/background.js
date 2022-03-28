@@ -760,8 +760,8 @@ function isEregKsrzisSignedInWithSpecificRole(tab, roleName, callback) {
                                     text: text,
                                     roleName: roleName
                                 }
-                            }, function(isActive) {
-                                callback(isActive);
+                            }, function(activeUsername) {
+                                callback(activeUsername);
                             }
                         );
                     });
@@ -1104,8 +1104,11 @@ function updateZadanka(tab, params) {
             var IsDisabledPopupAboutParamsFromPosledniZadanka = options.get(IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA);
             var IsDisabledRedirectToPacientiCovid19 = options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
 
-            isEregKsrzisSignedInWithSpecificRole(tab, EREG_ROLE_ABLE_DO_TEST_REQUEST, function(isSignedIn) {
-                const redirectToEreg = isSignedIn && IsDisabledRedirectToPacientiCovid19 != "true";
+            isEregKsrzisSignedInWithSpecificRole(tab, EREG_ROLE_ABLE_DO_TEST_REQUEST, function(activeUsername) {
+                const redirectToEreg = activeUsername && IsDisabledRedirectToPacientiCovid19 != "true";
+                if(redirectToEreg && activeUsername != true) {
+                    params.set("OrdinaceVystavil", activeUsername);
+                }
                 if (IsDisabledPopupAboutParamsFromPosledniZadanka != "true") {
                     updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, redirectToEreg, params.get("TestovanyCisloPojistence"), params, function(params) {
                         updateZadankaRedirect(tab, redirectToEreg, params);

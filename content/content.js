@@ -48,7 +48,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         var jenPOCTElement = responseDocument.getElementById("JenPOCT"); 
 
         if(jenPOCTElement && jenPOCTElement.value.toLowerCase() == "false") {
-            sendResponse(true);
+            var usernameElement = responseDocument.getElementsByClassName("status-bar_username");
+            if(usernameElement[0] && usernameElement[0].innerText.trim()) {
+                sendResponse(usernameElement[0].innerText.trim());
+            } else {
+                sendResponse(true);
+            }
         } else {
             sendResponse(false);
         }
