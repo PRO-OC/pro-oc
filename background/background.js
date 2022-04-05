@@ -26,9 +26,11 @@ const AG_SAMOPLATCE = "AGsamoplatce";
 const CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI = "ConfirmPosledniZadankaRizikovePovolani";
 const CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU = "ConfirmPosledniZadankaUdajeOPobytu";
 
-const EREG_ROLE_ABLE_DO_TEST_REQUEST = "Indikující osoba";
+const GET_SIGNED_USERNAME = "GetSignedUsername";
 
-const IS_ACTIVE_EREG_ROLE = "IsActiveEregRole";
+const ROLE_VAKCINACE = 367172;
+const ROLE_ZADAVATEL_POCT = 367173;
+const ROLE_INDIKUJICI_OSOBA = 373644;
 
 function fixUlice(ulice) {
     if(!ulice) {
@@ -740,8 +742,8 @@ function getEregRegistrDefaultPageUrl(callback) {
     });
 }
 
-function isEregKsrzisSignedInWithSpecificRole(tab, roleName, callback) {
-    getEregRegistrZadankaPageUrl(function(url) {
+function isEregKsrzisSignedInWithSpecificRole(tab, callback) {
+    getRegistrCUDVyhledaniPacientaUrl(function(url) {
         fetch(url, {
             method: 'get'
         })
@@ -749,23 +751,18 @@ function isEregKsrzisSignedInWithSpecificRole(tab, roleName, callback) {
             if(response.status == 200 && response.redirected) {
                 callback(false);
             } else {
-                if(!roleName) {
-				    callback(true);
-                } else {
-                    response.text().then(function(text) {
-                        chrome.tabs.sendMessage(tab.id,
-                            {
-                                text: IS_ACTIVE_EREG_ROLE,
-                                data: {
-                                    text: text,
-                                    roleName: roleName
-                                }
-                            }, function(activeUsername) {
-                                callback(activeUsername);
+                response.text().then(function(text) {
+                    chrome.tabs.sendMessage(tab.id,
+                        {
+                            text: GET_SIGNED_USERNAME,
+                            data: {
+                                text: text
                             }
-                        );
-                    });
-                }
+                        }, function(activeUsername) {
+                            callback(activeUsername);
+                        }
+                    );
+                });
 			}
         })
         .catch(function (error) {
@@ -1085,6 +1082,38 @@ function updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, isDisabl
     });
 }
 
+function getUrlRoleAddressUrlParams(efektivniRoleId) {
+    var urlParams = new URLSearchParams();
+    urlParams.set("efektivniRoleId", efektivniRoleId);
+    return urlParams;
+}
+
+function getVyberRoleUrl() {
+    return "https://ereg.ksrzis.cz/Registr/CUDZadanky/MenuToolbar/VyberRole";
+}
+
+function setUserRole(roleId, onEnd) {
+
+    var urlRoleAddress = getVyberRoleUrl();
+
+    var urlRoleAddressParams = getUrlRoleAddressUrlParams(roleId);
+
+    fetch(urlRoleAddress, {
+        method: 'post',
+        headers: {
+            'Content-type': 'application/x-www-form-urlencoded'
+        },
+        body: urlRoleAddressParams.toString()
+    })
+    .then(function(response) {
+        onEnd();
+    })
+    .catch(function (error) {
+        console.log(error);
+        onEnd();
+    });
+}
+
 function updateZadanka(tab, params) {
 
     params = cleanUrlParams(params);
@@ -1104,14 +1133,16 @@ function updateZadanka(tab, params) {
             var IsDisabledPopupAboutParamsFromPosledniZadanka = options.get(IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA);
             var IsDisabledRedirectToPacientiCovid19 = options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
 
-            isEregKsrzisSignedInWithSpecificRole(tab, EREG_ROLE_ABLE_DO_TEST_REQUEST, function(activeUsername) {
+            isEregKsrzisSignedInWithSpecificRole(tab, function(activeUsername) {
                 const redirectToEreg = activeUsername && IsDisabledRedirectToPacientiCovid19 != "true";
-                if(redirectToEreg && activeUsername != true) {
+                if(activeUsername) {
                     params.set("OrdinaceVystavil", activeUsername);
                 }
                 if (IsDisabledPopupAboutParamsFromPosledniZadanka != "true") {
                     updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, redirectToEreg, params.get("TestovanyCisloPojistence"), params, function(params) {
-                        updateZadankaRedirect(tab, redirectToEreg, params);
+                        setUserRole(ROLE_INDIKUJICI_OSOBA, function() {
+                            updateZadankaRedirect(tab, redirectToEreg, params);
+                        });
                     });
                 } else {
                     updateZadankaRedirect(tab, redirectToEreg, params);

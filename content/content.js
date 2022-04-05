@@ -14,7 +14,12 @@ const AG_VYROBCE_LIST_URL = "AGVyrobceListUrl";
 
 const CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI = "ConfirmPosledniZadankaRizikovePovolani";
 const CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU = "ConfirmPosledniZadankaUdajeOPobytu";
-const IS_ACTIVE_EREG_ROLE = "IsActiveEregRole";
+
+const ROLE_VAKCINACE = 367172;
+const ROLE_ZADAVATEL_POCT = 367173;
+const ROLE_INDIKUJICI_OSOBA = 373644;
+
+const GET_SIGNED_USERNAME = "GetSignedUsername";
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     if (msg.text === CONFIRM_POSLEDNI_ZADANKA_RIZIKOVE_POVOLANI) {
@@ -42,18 +47,13 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     } else if (msg.text === CONFIRM_POSLEDNI_ZADANKA_UDAJE_O_POBYTU && msg.data.TestovanyUlicePosledniZadanka && msg.data.TestovanyMestoPosledniZadanka && msg.data.TestovanyPSCPosledniZadanka) {
         var confirmUdajeOPobytu = window.confirm("Použít Údaje o pobytu: " + msg.data.TestovanyUlicePosledniZadanka + ", " + msg.data.TestovanyMestoPosledniZadanka + ", " + msg.data.TestovanyPSCPosledniZadanka + "? (poslední žádanka)");
         sendResponse(confirmUdajeOPobytu);
-    } else if (msg.text === IS_ACTIVE_EREG_ROLE && msg.data.text && msg.data.roleName) {
+    } else if (msg.text === GET_SIGNED_USERNAME && msg.data.text) {
         var parser = new DOMParser();
         var responseDocument = parser.parseFromString(msg.data.text,"text/html");
-        var jenPOCTElement = responseDocument.getElementById("JenPOCT"); 
 
-        if(jenPOCTElement && jenPOCTElement.value.toLowerCase() == "false") {
-            var usernameElement = responseDocument.getElementsByClassName("status-bar_username");
-            if(usernameElement[0] && usernameElement[0].innerText.trim()) {
-                sendResponse(usernameElement[0].innerText.trim());
-            } else {
-                sendResponse(true);
-            }
+        var usernameElement = responseDocument.getElementsByClassName("status-bar_username");
+        if(usernameElement && usernameElement[0] && usernameElement[0].innerText.trim()) {
+            sendResponse(usernameElement[0].innerText.trim());
         } else {
             sendResponse(false);
         }
@@ -1147,18 +1147,56 @@ if(
     var Prijmeni = PrijmeniLabelDetailProfilu.nextElementSibling.innerText;
     var DatumNarozeni = DatumNarozeniDetailProfilu.nextElementSibling.innerText;
 
-    var url = getRegistrCUDZadankyVyhledaniPacientaPrehledVsechPage();
-    var urlParams = getRegistrCUDZadankyVyhledaniPacientaPrehledVsechUrlParams(Jmeno, Prijmeni, DatumNarozeni);  
-    var vyhledatPacientaVPacientiLink = url + "?" + urlParams.toString();
-
     vyhledatPacientaVPacientiLinkElement = document.createElement("a");
     vyhledatPacientaVPacientiLinkElement.setAttribute("class", "button-action ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only valid");
     vyhledatPacientaVPacientiLinkElement.setAttribute("id", vyhledatPacientaVPacientiLinkElementId);
-    vyhledatPacientaVPacientiLinkElement.setAttribute("href", vyhledatPacientaVPacientiLink);
     vyhledatPacientaVPacientiLinkElement.text = "Vyhledat pacienta";
     vyhledatPacientaVPacientiLinkElement.setAttribute("role", "button");
 
+    vyhledatPacientaVPacientiLinkElement.addEventListener('click', function() {
+        setUserRole(ROLE_VAKCINACE, function() {
+
+            var url = getRegistrCUDZadankyVyhledaniPacientaPrehledVsechPage();
+            var urlParams = getRegistrCUDZadankyVyhledaniPacientaPrehledVsechUrlParams(Jmeno, Prijmeni, DatumNarozeni);  
+            var vyhledatPacientaVPacientiLink = url + "?" + urlParams.toString();
+
+            window.location.href = vyhledatPacientaVPacientiLink;
+        });
+        
+    });
+
     detailPacientaActions.appendChild(vyhledatPacientaVPacientiLinkElement);
+}
+
+function getUrlRoleAddressUrlParams(efektivniRoleId) {
+    var urlParams = new URLSearchParams();
+    urlParams.set("efektivniRoleId", efektivniRoleId);
+    return urlParams;
+}
+
+function getVyberRoleUrl() {
+    return "https://ereg.ksrzis.cz/Registr/CUDZadanky/MenuToolbar/VyberRole";
+}
+
+function setUserRole(roleId, onEnd) {
+
+    var urlRoleAddress = getVyberRoleUrl();
+
+    var urlRoleAddressParams = getUrlRoleAddressUrlParams(roleId);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", urlRoleAddress, true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState === XMLHttpRequest.DONE) {
+            if(xhr.status == 200) {
+                onEnd();   
+            } else {
+                onEnd();
+            }
+        }
+    }
+    xhr.send(urlRoleAddressParams.toString());
 }
 
 const VyrobcePoctTestuKodElement = document.getElementById("VyrobcePoctTestuKod");
