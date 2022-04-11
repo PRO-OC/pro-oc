@@ -742,7 +742,7 @@ function getEregRegistrDefaultPageUrl(callback) {
     });
 }
 
-function isEregKsrzisSignedInWithSpecificRole(tab, callback) {
+function isEregKsrzisSignedInWithSpecificRole(tab, roleId, callback) {
     getRegistrCUDVyhledaniPacientaUrl(function(url) {
         fetch(url, {
             method: 'get'
@@ -756,10 +756,11 @@ function isEregKsrzisSignedInWithSpecificRole(tab, callback) {
                         {
                             text: GET_SIGNED_USERNAME,
                             data: {
-                                text: text
+                                "text": text,
+                                "roleId": roleId
                             }
-                        }, function(activeUsername) {
-                            callback(activeUsername);
+                        }, function(results) {
+                            callback(results);
                         }
                     );
                 });
@@ -1133,12 +1134,12 @@ function updateZadanka(tab, params) {
             var IsDisabledPopupAboutParamsFromPosledniZadanka = options.get(IS_DISABLED_POPUP_ABOUT_PARAMS_FROM_POSLEDNI_ZADANKA);
             var IsDisabledRedirectToPacientiCovid19 = options.get(IS_DISABLED_REDIRECT_TO_PACIENTI_COVID_19);
 
-            isEregKsrzisSignedInWithSpecificRole(tab, function(activeUsername) {
-                const redirectToEreg = activeUsername && IsDisabledRedirectToPacientiCovid19 != "true";
-                if(activeUsername) {
-                    params.set("OrdinaceVystavil", activeUsername);
+            isEregKsrzisSignedInWithSpecificRole(tab, ROLE_INDIKUJICI_OSOBA, function(results) {
+                const redirectToEreg = results && results.roleExists && IsDisabledRedirectToPacientiCovid19 != "true";
+                if(results && results.username) {
+                    params.set("OrdinaceVystavil", results.username);
                 }
-                if (IsDisabledPopupAboutParamsFromPosledniZadanka != "true") {
+                if (redirectToEreg) {
                     updateZadankaConfirmWindowsAboutParamsFromPosledniZadanka(tab, redirectToEreg, params.get("TestovanyCisloPojistence"), params, function(params) {
                         setUserRole(ROLE_INDIKUJICI_OSOBA, function() {
                             updateZadankaRedirect(tab, redirectToEreg, params);

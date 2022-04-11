@@ -52,11 +52,24 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         var responseDocument = parser.parseFromString(msg.data.text,"text/html");
 
         var usernameElement = responseDocument.getElementsByClassName("status-bar_username");
+
+        var username = false;
         if(usernameElement && usernameElement[0] && usernameElement[0].innerText.trim()) {
-            sendResponse(usernameElement[0].innerText.trim());
-        } else {
-            sendResponse(false);
+            username = usernameElement[0].innerText.trim();
         }
+
+        var roleExists = false;
+        if(msg.data.roleId) {
+            var roleElement = responseDocument.evaluate("//a[contains(@onclick,'" + msg.data.roleId + "')]", responseDocument, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+            if(roleElement.snapshotLength) {
+                roleExists = true;
+            }
+        }
+        sendResponse({
+            "username": username,
+            "roleExists": roleExists
+        });
     }
     return true;
 });
